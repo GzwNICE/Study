@@ -1,0 +1,621 @@
+/**
+ * 通用的模块
+ * Created by Administrator on 2016/2/2.
+ */
+define('modules',["constant","tools"],
+    function (constant,tools) {
+
+        var modules = {};
+
+        var url = constant.url;
+
+        modules.Pop = function($el,config) {
+            this.opts = $.extend({
+                size:[0,0],
+                style:"",
+                title:"",
+                con:"",
+                loadAfter:function(){}
+            },config);
+            this.$pop = null;
+            this.$el = $el;
+            this.$mask = null;
+            this.$html = $("html");
+            this.init();
+        };
+        modules.Pop.prototype = {
+            init: function () {
+                this.makeHtml();
+                this.bindEvent();
+                return this;
+            },
+            makeHtml:function(){
+                var This = this,
+                    $body = $("body"),
+                    id = new Date().getTime();
+                var tpl = '<div class="pop-wrap pop-wrap-hidden" id="pop-${id}" style="${style}">'
+                    +'<div class="pop-inner">'
+                    +   '<div class="pop-title">${title}</div>'
+                    +   '<a href="javascript:;" class="fn-close pop-close">×</a>'
+                    +   '<div class="pop-con">${con}</div>'
+                    +'</div>'
+                    +'</div>';
+
+                if(!this.$mask){
+                    $body.append('<div class="pop-mask" style="display: none;" id="popMask"></div>');
+                    this.$mask = $("#popMask");
+                }
+
+                $body.append(tools.htmlTemplate(tpl,{
+                    id:id,
+                    size:[0,0],
+                    style:This.opts.style,
+                    title:This.opts.title,
+                    con:This.opts.con
+                }));
+
+                this.$pop = $("#pop-"+id);
+                this.$el.data("pop-id",id);
+                if(this.opts.size[0]){
+                    this.$pop.css({"width":this.opts.size[0],"margin-left": "-"+this.opts.size[0]/2+"px"});
+                }
+                if(this.opts.size[1]){
+                    this.$pop.css({"height":this.opts.size[1],"margin-top": "-"+this.opts.size[1]/2+"px"});
+                }
+
+                this.opts.loadAfter.call(this);
+            },
+            open: function () {
+                this.$pop.css({ top: "50%" });
+                this.$mask.show();
+                this.$html.addClass("fn-lockscreen");
+            },
+            close: function () {
+                var This = this;
+                this.$pop.css({ top: "-200%" });
+                setTimeout(function(){
+                    This.$mask.fadeOut();
+                    This.$html.removeClass("fn-lockscreen");
+                },300);
+
+            },
+            bindEvent: function () {
+                var This = this;
+                this.$pop.on("click", ".pop-close", function () {
+                    This.close();
+                })
+            }
+        };
+
+        //jq扩展
+        $.fn.extend({
+            preventScroll: function () {
+                return this.each(function () {
+                    var _this = $(this)[0];
+                    if (navigator.userAgent.indexOf("Firefox") > 0) {
+                        _this.addEventListener('DOMMouseScroll', function (e) {
+                            _this.scrollTop += e.detail > 0 ? 60 : -60;
+                            e.preventDefault();
+                        }, false);
+                    } else {
+                        _this.onmousewheel = function (e) {
+                            e = e || window.event;
+                            _this.scrollTop += e.wheelDelta > 0 ? -60 : 60;
+                            return false;
+                        };
+                    }
+                });
+            },
+
+            //简单的tab $("外层ID").simTab("事件","延时","回调")
+            simTab: function (Event, delay, callback, eq) {
+                var delayTime = delay ? delay : 0,
+                    time = 0,
+                    _event = Event || "click";  //mouseenter click
+
+                return this.each(function () {
+                    var $this = $(this),
+                        $tab = $this.find(".tab"),
+                        $tabShow = $this.find(".tab-show"),
+                        $defTab = $this.find(".cur");
+
+                    $this.on(_event, ".tab", function () {
+                        var self = this,
+                            that = $(this),
+                            index = $tab.index(that);
+
+                        if (that.hasClass('cur')) return false;
+                        clearTimeout(time);
+                        time = setTimeout(function () {
+                            that.addClass("cur").siblings(".tab").removeClass("cur");
+                            $tabShow.eq(index).addClass("tab-focus").show().siblings(".tab-show").removeClass("tab-focus").hide();
+                            callback && callback.call(self,$this,$tabShow,index);
+                        }, delayTime);
+                    }).on("mouseleave", ".tab", function () {
+                        clearTimeout(time)
+                    })
+                    .find(".tab").eq(0).trigger(_event);
+                })
+
+            },
+            sCheckbox: function (callback) {
+                var setState = function (state) {
+                    var $this = $(this),
+                        $pEl = $this.parent("label");
+                    if (this.disabled) {
+                        return
+                    }
+                    if (state == 'selected') {
+                        this.checked = true;
+                        $pEl.addClass("checked");
+                    }
+                    else if (state == 'unselected') {
+                        this.checked = false;
+                        $pEl.removeClass("checked");
+                    }
+                    else {
+                        this.checked ? $pEl.addClass("checked") : $pEl.removeClass("checked");
+                    }
+                    callback && callback.call(this);
+                };
+
+                return this.each(function () {
+                    var $this = $(this);
+                    $this.before('<span class="label-checkbox-mask"></span>');
+                    $this.on("changed", function (event, fun) {
+                        fun && fun.call(this);
+                    })
+                        .on("selected", function (event, fun) {
+                            setState.call(this, "selected");
+                            fun && fun.call(this);
+                        })
+                        .on("unselected", function (event, fun) {
+                            setState.call(this, "unselected");
+                            fun && fun.call(this);
+                        });
+                    setState.call(this)
+                })
+                    .on("change", function () {
+                        setState.call(this, "change")
+                    })
+            },
+            sRadio: function (callback) {
+                var setState = function (state) {
+                    var $this = $(this),
+                        $pEl = $this.parent("label"),
+                        $radioPel = $("[name='" + this.name + "']").parent("label");
+
+                    if (state == 'selected') {
+                        this.checked = true;
+                        $radioPel.removeClass("checked");
+                        $pEl.addClass("checked");
+                    }
+                    else if (state == 'unselected') {
+                        this.checked = false;
+                        $radioPel.removeClass("checked");
+                    }
+                    else {
+                        if (this.checked) {
+                            $radioPel.removeClass("checked");
+                            $pEl.addClass("checked");
+                        }
+                    }
+                    callback && callback.call(this);
+                };
+
+                return this.each(function () {
+                    var $this = $(this);
+                    $this.before('<span class="label-radio-mask"></span>');
+                    $this.on("change", function () {
+                        setState.call(this, "change")
+                    })
+                        .on("changed", function (event, fun) {
+                            fun && fun.call(this);
+                        })
+                        .on("selected", function (event, fun) {
+                            setState.call(this, "selected");
+                            fun && fun.call(this);
+                        })
+                        .on("unselected", function (event, fun) {
+                            setState.call(this, "unselected");
+                            fun && fun.call(this);
+                        });
+                    setState.call(this)
+                })
+
+            },
+            //下拉菜单
+            sSelect: function (config) {
+                var opts = $.extend(true, {
+                    type: "menu",
+                    onSelected: function (that, val, txt, $menu) {
+                    }
+                }, config);
+                var This = this;
+                var pos = {
+                    "l-b": { "left": "0" },
+                    "r-b": { "right": "0" }
+                };
+                this.els = $(".bl-ddmenu");
+                this.multiSelectObj = {};
+                this.multiSelectElLength = 0;
+                this.setPos = function ($this, $menuCon, $menuBtn, target) {
+                    var _pos = $this.data("pos") || "l-b",
+                        cssObj = {};
+                    if ($this.data("append")) {
+                        var targetId = $this.data("target"),
+                            $target = $("#" + targetId),
+                            newPos = $menuBtn.offset().left;
+                        //tools.log(newPos);
+
+                        if (_pos == "r-b") {
+                            newPos = { "left": $menuBtn.offset().left + $menuBtn.outerWidth() - $target.width() };
+                        } else {
+                            newPos = { "left": $menuBtn.offset().left };
+                        }
+                        cssObj = $.extend({
+                            "top": ($menuBtn.offset().top + $menuBtn.outerHeight() + This.topDiff),
+                            "margin-top": -1,
+                            "display": "none"
+                        }, newPos);
+                        $target.css(cssObj);
+                    } else {
+                        //              cssObj = $.extend({"padding-top":$menuBtn.outerHeight(),"margin-top":-1},pos[_pos]);
+                        cssObj = $.extend({ "padding-top": 0, "margin-top": $menuBtn.outerHeight() + This.topDiff - 1 }, pos[_pos]);
+                        $menuCon.css(cssObj);
+                    }
+
+                };
+                this.free = function ($menu, $menuCon) {
+                    var append = $menu.data("append");
+                    if (append) {
+                        var multiSelectClassName = this.isMultiSelect ? "menu-multi-select" : "";
+                        var randomNum = 1 + Math.round(Math.random() * 100 - 1); //1-100随机数
+                        var id = "sSelectFree" + randomNum;
+                        $menu.data("target", id);
+                        $(append).append('<div class="menu-con menu-free ' + multiSelectClassName + '" id="' + id + '" style="display:none;">' + $menuCon.html() + '</div>');
+                    }
+                };
+                this.Switch = function ($el) {
+                    if ($el.hasClass("menu-not")) {
+                        return
+                    }
+                    var target = $el.data("target"), $target;
+                    if (target) {
+                        $target = $("#" + target);
+                        $target.is(":hidden") ? $target.show() : $target.hide();
+                    } else {
+                        $el.toggleClass("menu-on");
+                    }
+                    this.setZ($el);
+                };
+                this.setZ = function ($el) {
+                    //IE6 7 如果父级相对定位但是没有z-index的话，会出现下方的 同级相对定位遮挡
+                    if (tools.Browser().msie && tools.Browser().ver < 8) {
+                        var $pEl = "", i = 0;
+                        var forParent = function (jqEl) {
+                            i++;
+                            $pEl = jqEl.parent();
+                            if ($pEl.css("position").toLowerCase() == "static") {
+                                //tools.log($pEl.css("position").toLowerCase());
+                                if (i < 1) {
+                                    forParent($pEl)
+                                }
+                            }
+                        };
+                        forParent($el);
+                        $el.hasClass("menu-on") ? $pEl.css({ "z-index": "10" }) : $pEl.css({ "z-index": "" });
+                    }
+                };
+                this.selected = function ($this, $menu, $menuInput, $menuBtnText, $menuBtn, defTxt) {
+                    var value = $this.data("value"),
+                        text = $this.text();
+
+                    if ($this.hasClass("disabled")) {
+                        return
+                    }
+                    var isMultiSelect = $menu.data("multi-select");
+                    //This.Switch($this);
+                    if (isMultiSelect) {
+                        if (this.multiSelectObj[value]) {
+                            delete this.multiSelectObj[value];
+                            $this.removeClass("selected");
+                            this.multiSelectElLength--;
+                        } else {
+                            if (this.multiSelectMax && this.multiSelectElLength >= this.multiSelectMax) {
+                                //提示 项目中用的 layer 可以直接用layer提示
+                                typeof layer == "object" ? layer.msg('最多可以选择' + this.multiSelectMax + '个', { icon: 5 }) : alert("最多可以选择" + this.multiSelectMax + "个");
+                                return
+                            }
+                            this.multiSelectObj[value] = text;
+                            $this.addClass("selected");
+                            this.multiSelectElLength++;
+                        }
+                        this.makeMultiSelectHtml($menuBtn, $menuInput, defTxt);
+                    } else {
+                        $menu.removeClass("menu-on");
+                        This.setZ($menu);
+                        if (opts.type == "menu") {
+                            $menuInput.val(value);
+                            $menuBtnText.text(text).removeClass("placeholder").addClass("placeholder-off");
+                        }
+                    }
+                    opts.onSelected($this, value, text, $menu);
+                };
+                this.makeMultiSelectHtml = function ($menuBtn, $menuInput, defTxt) {
+                    var _html = "", arr = [], ids = [];
+                    for (var key in this.multiSelectObj) {
+                        ids.push(key);
+                        arr.push('<span class="ms-el" data-value="' + key + '">' + this.multiSelectObj[key] + ' <i class="fn-close ms-el-close">×</i></span>');
+                    }
+                    arr.push('<i class="f-icon f-icon-arr-b"></i>');
+                    _html = this.multiSelectElLength ? arr.join("") : '<span class="placeholder">' + defTxt + '</span><i class="f-icon f-icon-arr-b"></i>';
+                    $menuBtn.html(_html);
+                    $menuInput.val(ids.join(","));
+                };
+                this.msElClose = function ($el, $menu, $menuBtn, $menuInput, defTxt) {
+                    var value = $el.data("value");
+                    delete this.multiSelectObj[value];
+                    //$this.removeClass("selected");
+                    $menu.find("li[data-value='" + value + "']").removeClass("selected");
+                    this.multiSelectElLength--;
+
+                    this.makeMultiSelectHtml($menuBtn, $menuInput, defTxt)
+                };
+                this.docEvent = function () {
+                    $(document).on("click", function (e) {
+                        if (!$(e.target).closest(".bl-ddmenu").length) {
+                            This.els.removeClass("menu-on");
+                            $(".menu-free").hide();
+                            This.setZ(This.els);
+                        }
+                    });
+                };
+                this.docEvent();
+                return this.each(function (i) {
+                    var $this = $(this),
+                        event = $this.data("event") || "click.menuBtn",
+                        //zIndex = $this.eq(0).css("z-index"),
+                        append = $this.data("append") || false,
+                        $menuInput = $this.find(".menu-input"),
+                        menuInputVal = $menuInput.val(),
+                        $menuBtn = $this.find(".menu-btn"),
+                        $menuBtnText = $menuBtn.children(".placeholder"),
+                        $menuCon = $this.find(".menu-con"),
+                        $li = $this.find("li"),
+                        //$multiSelectBtn = $this.find(".multi-select-btn");
+                        defTxt = $menuBtnText.text();
+
+                    This.isMultiSelect = $this.data("multi-select") || 0;
+
+                    //This.
+                    This.topDiff = $this.data("top-diff") || 0;
+                    This.multiSelectMax = $this.data("max") || 0;
+
+                    //设置宽度
+                    if (tools.Browser().msie && tools.Browser().ver < 8) {
+                        if ($this.hasClass("noSetWidth")) {
+                            return
+                        }
+                        if ($menuBtnText.length) {
+                            var _w = $menuBtnText.width() + 15;
+                            //$menuBtn.width(_w);
+                            //$menuCon.width(_w);
+                        }
+                    }
+
+                    //设置初始值
+                    if (menuInputVal) {
+                        //多选
+                        if (This.isMultiSelect) {
+                            var ids = menuInputVal.split(","),
+                                idsLen = ids.length,
+                                arr = [],
+                                j = 0;
+
+                            var value = "", text = "";
+
+                            This.multiSelectElLength = idsLen;
+
+                            for (j; j < idsLen; j++) {
+                                value = ids[j];
+                                text = $li.filter("[data-value='" + ids[j] + "']").addClass("selected").text();
+                                This.multiSelectObj[value] = text;
+                                arr.push('<span class="ms-el" data-value="' + value + '">' + text + ' <i class="fn-close ms-el-close">×</i></span>');
+                            }
+                            arr.push('<i class="f-icon f-icon-arr-b"></i>');
+                            $menuBtn.html(arr.join(""));
+                        } else {
+                            var $el = $li.filter("[data-value='" + menuInputVal + "']");
+                            value = $el.data("value");
+                            text = $el.text();
+                            $menuInput.val(value);
+                            $menuBtnText.text(text).removeClass("placeholder").addClass("placeholder-off");
+                        }
+                    } else {
+                        $menuInput.val(""); //初始的时候设置为空
+                    }
+                    //多选添加多选样式
+                    if (This.isMultiSelect) {
+                        $this.addClass("menu-multi-select");
+                    }
+
+                    This.free($this, $menuCon);
+
+                    //设置z轴
+                    //zIndex-- ;
+                    //$this.css({'z-index':zIndex-i});
+
+                    //绑定事件
+                    if (event == "hover") {
+                        $this.hover(
+                            function () {
+                                This.setPos($this, $menuCon, $menuBtn);
+                                //This.Switch($this);
+                                $this.addClass("menu-on");
+                            },
+                            function () {
+                                //This.Switch($this);
+                                $this.removeClass("menu-on");
+                            }
+                        )
+                    } else {
+                        $this.off("click.menuBtn").on("click.menuBtn", ".menu-btn", function () {
+                            This.setPos($this, $menuCon, $menuBtn);
+                            This.els.removeClass("menu-on");
+                            This.Switch($this);
+                        }).off("focus.menu").on("focus.menu", ".menu-input", function () {
+                            $menuBtn.trigger("click");
+                        });
+                    }
+                    if (append) {
+                        $menuCon = $("#" + $this.data("target"));
+                    }
+
+                    $menuCon.off("click.menuLi").on("click.menuLi", "li", function () {
+                        This.selected($(this), $this, $menuInput, $menuBtnText, $menuBtn, defTxt)
+                    });
+
+                    //多选
+                    $menuCon.off("click.multiSelect").on("click.multiSelect", ".multi-select-btn", function () {
+                        This.makeMultiSelectHtml($menuBtn, $menuInput);
+                    });
+
+                    $this.off("click.msClose").on("click.msClose", ".ms-el", function () {
+                        This.msElClose($(this), $this, $menuBtn, $menuInput, defTxt);
+                    });
+
+                    $menuInput.on("changed", function (event, fun) {
+                        fun && fun.call(this);
+                    })
+
+                })
+            },
+            labelPlaceholder: function (config) {
+                if ('placeholder' in document.createElement('input')) { return }   //支持placeholder的话返回
+                var opts = $.extend({
+                    placeholder: "off",
+                    leftDeviation: 0,
+                    tplLabel: '<label for="${for}" style="cursor: text;position: absolute; left: ${left}px; width: ${width}px;height: ${height}px!important; line-height:${lineHeight}px!important;font-size:${fontSize};${style};display:${display};text-indent:${tIndent}px" class="label-placeholder">${placeholder}</label>',
+                    styleLabel: 'top:1px;color: #999;text-align: left!important;padding:0'
+                }, config);
+
+                this.hidden = function () {
+                    $(this).siblings(".label-placeholder").hide();
+                };
+
+                return this.each(function (index) {
+                    if (this.value.replace(/\s/g, "").length) { return }
+                    if (!this.id) { this.id = this.name + index }
+                    var $this = $(this);
+                    var placeholder = $this.attr("placeholder");
+                    if (!placeholder) { return }
+                    $this.parent().css("position", "relative");
+                    var fontSize = $this.css("font-size"),
+                        left = ($this.position().left - 0) + opts.leftDeviation,
+                        textIndent = $this.css("padding-left").replace("px", "") - 0,
+                        W = $this.outerWidth() - opts.leftDeviation * 2,
+                        H = $this.outerHeight() - 2,
+                        forValue = this.id;
+                    //alert( $this.parents().html());
+
+                    var styleLabel = opts.styleLabel ? opts.styleLabel : "";
+                    var display = this.value ? "none" : "block";
+                    var temp = tools.htmlTemplate(opts.tplLabel, { "for": forValue, "placeholder": placeholder, "left": left, "width": W, "height": H, "lineHeight": H - 2, "fontSize": fontSize, "style": styleLabel, "display": display, "tIndent": textIndent });
+                    $this.before(temp);
+
+                    var $labelPlaceholder = $this.siblings(".label-placeholder");
+                    if (this.tagName.toLowerCase() == "textarea") {
+                        $labelPlaceholder.css({ top: "6px", "margin-top": 0, "line-height": "24px" });
+                    }
+                    $this.on("focus.placeholder", function () {
+                        $labelPlaceholder.hide();
+                    }).on("blur.placeholder", function () {
+                        if ($(this).val()) {
+                            $labelPlaceholder.hide();
+                        } else {
+                            $labelPlaceholder.show();
+                        }
+                    });
+
+                    $this.on("destroy.labelPlaceholder", function (event) {
+                        $(this).siblings(".label-placeholder").hide();
+                    });
+
+                });
+
+            },
+            //浮动QQ
+            fixQq:function(config){
+                /*
+                 $.fn.fixQq({
+                     content: '<li class="qq"><a onclick="window.open(\'https://eco-api.meiqia.com/dist/standalone.html?eId=2298\',\'效率大师在线客服\',\'width=505,height=600,top=100,screenX=150,location=0,menubar=0,status=0,titlebar=0,toolbar=0,left=150\')" target="_blank"><i class="f-icon fix-qq-icon">&#xe625;</i><span class="txt">客服：小睿</span></a></li>'
+                     + '<li class="tel"><i class="f-icon fix-qq-icon">&#xe607;</i><span class="txt">400-008-0179</span></li>'
+                     + '<li class="feedback not"><a href="http://help.keji01.com/hc/request/guest/" class="btn-feedback" target="_blank"><span>我要<br/>反馈</span></a></li>'
+                 });
+                 //css
+                .fix-qq{ position: fixed; right:-1000px; bottom: 300px; z-index: 900;
+                    _display: none;}
+                .fix-qq li,.fix-qq li a{color: #fff; font-size: 16px; cursor: pointer;}
+                .fix-qq li{ background: #318eca; line-height: 60px; margin-bottom:4px; border: #e4e2e1 solid 1px; position: relative;
+                    overflow: hidden;*zoom:1;}
+                .fix-qq .f-icon{ width: 60px; height: 60px; text-align: center; font-size: 38px;
+                    background: #e4e2e1; color: #555; transition: background 0.2s,color 0.2s;}
+                .fix-qq li:hover{ border-color:#318eca;}
+                .fix-qq li:hover .f-icon{background: #fff; color: #2e87c1}
+                .fix-qq .f-icon,.fix-qq .txt{ float: left;}
+                .fix-qq .txt{ padding: 0 10px;}
+                .fix-qq .feedback{width: 60px;  background-color: #7CC700; text-align: center;}
+                .fix-qq .feedback:hover{ border-color:#7CC700; background-color: #6EB100;}
+                .fix-qq .btn-feedback{display: block;line-height: 60px; vertical-align: middle;color: #fff;}
+                .fix-qq .btn-feedback span{ line-height:normal; vertical-align: middle;
+                    display: inline-block;*display: inline;*zoom:1;}
+                */
+                //移动端不显示
+                if(/AppleWebKit.*Mobile/i.test(navigator.userAgent) ){
+                    return
+                }
+                var opts = $.extend(true,{
+                    content:"",
+                    bottom:"200px"
+                },config);
+
+                var tpl = '<div class="fix-qq" id="fixQq" style="bottom:'+opts.bottom+'">'
+                    +'<ul class="fix-qq-list">'+opts.content+'<li class="go-top not"><i class="f-icon fix-qq-icon">&#xe621;</i></li></ul>'
+                    +'</div>';
+                if(!$fixQq){
+                    $("body").append(tpl);
+                }
+
+                var $fixQq = $("#fixQq"),
+                    $lis = $fixQq.find("li").not(".not"),
+                    fixQqW = $fixQq.width(),
+                    fixQqIconW = $fixQq.find(".fix-qq-icon").eq(0).width(),
+                    diffW = fixQqW-fixQqIconW;
+
+                $fixQq.css({"right":-diffW});
+
+                $lis.hover(
+                    function(){
+                        $(this).stop(true,true).animate({"left":-diffW})
+                    },
+                    function(){
+                        $(this).stop(true,true).animate({"left":0})
+                    }
+                );
+                $fixQq.on("click",".go-top",function(){
+                    $("html,body").animate({"scrollTop":0},800);
+                })
+            }
+        });
+
+
+        //industry
+        return modules;
+
+    });
+
+
+
+
+

@@ -1,0 +1,781 @@
+/**
+ * 懒人建站
+ * Created by Administrator on 2016/06/2.
+ */
+define(['constant', 'tools', 'modules', 'lazyLoad'],
+    function (constant, tools, modules) {
+
+        var controller = {};
+
+        var $win = $(window),
+            $html = $("html"),
+            $body = $("body");
+
+        function $id(id) {
+            return document.getElementById(id);
+        }
+
+        function setHtml(obj, html) {
+            obj && (obj.innerHTML = html);
+        }
+
+        //主控制器
+        controller.mainController = function () {
+
+            //tools.scrollDirection();
+            $.go = function (url) {
+                window.location.href = url
+            };
+
+            window.goDemo = function (This) {
+                var _href = location.href.split("#")[0];
+                $id("downUrl").value = _href;
+                $id("sourceUrl").value = _href;
+                $id("formDemo").submit();
+            };
+
+            controller.nav();
+
+            $('img[data-original]').lazyload();
+
+            this.lastExecuted();
+        };
+
+        //后续执行 延时 500 毫秒执行
+        controller.lastExecuted = function (pageConfig) {
+            controller.rmb();
+            //<img src="/templets/2016/demopic/bxd.jpg" alt="" style="width: 100%;">
+
+            /*$.fn.fixQq({
+             content:"",
+             bottom:"10px"
+             });*/
+
+            //百度统计
+            var _hmt = _hmt || [];
+            (function () {
+                var hm = document.createElement("script");
+                hm.src = "//hm.baidu.com/hm.js?934d980be49bbe4694aae578cd90cf86";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+
+
+            controller.prevNext();
+
+            controller.fixRmb();
+
+            if (document.documentElement.clientWidth > 1300) {
+                controller.share();
+            }
+        };
+
+        controller.nav = function () {
+
+            var $nav = $(".nav"),
+                isFixed = 0,
+                isHidden = 0;
+            /*$(window).on("scroll",function(){
+             var $this = $(this),
+             st = $this.scrollTop();
+             if(st>300){
+             if(!isFixed){
+             $nav.addClass("nav-fixed");
+             isFixed = 1;
+             }
+             }else{
+             $nav.removeClass("nav-fixed");
+             isFixed = 0;
+             }
+             if(window.mouseScrollDirection=="up"){
+             if(!isHidden) return;
+             $nav.stop(true,true).fadeIn();
+             isHidden = 0;
+             }else{
+             if(isHidden) return;
+             $nav.stop(true,true).fadeOut();
+             isHidden = 1;
+             }
+             });*/
+            //dropmenu1
+
+            var subNavTpl = '<div class="sub-nav">'
+                + '<span class="j"></span>'
+                + '<div class="sub-nav-list">${list}</div>'
+                + '</div>';
+
+            $nav.find(".has-sub").each(function () {
+                var $this = $(this),
+                    id = this.id,
+                    _html = "";
+                if (id && id != "64") {
+                    _html = tools.htmlTemplate(subNavTpl, {list: $("#dropmenu" + id).html()});
+                    $this.append(_html);
+                }
+            });
+
+            if (tools.isMobile()) {
+                controller.navMobile($(".nav-list").html());
+            }
+        };
+
+        controller.navMobile = function (list) {
+
+            //如果是移动端
+            var tpl = '<div class="nav-mobile" id="navMobile">'
+                    + '<span class="close"><i class="f-icon icon-close"></i></span>'
+                    + '<ul class="fn-cf nav-list-mobile">${list}</ul>'
+                    + '</div>',
+                _html = tools.htmlTemplate(tpl, {list: list}),
+                $navMobile = null,
+                isOpen = false;
+
+            $("#logo").after('<span class="f-icon icon-menu btn-nav-mobile"></span>');
+
+            $body.append(_html).on("click", ".btn-nav-mobile", function () {
+                $navMobile.addClass("nav-mobile-show");
+                $html.addClass("fn-lockscreen");
+                isOpen = 1;
+            });
+
+            $navMobile = $("#navMobile");
+            $navMobile.preventScroll().on("click", ".close", function () {
+                $navMobile.removeClass("nav-mobile-show");
+                $html.removeClass("fn-lockscreen");
+                isOpen = false
+            });
+        };
+
+        //名句
+        controller.famous = function () {
+            var famous = ["不要等到完美了才去做，要在做的过程中变得完美",
+                "没有伞的孩子必须努力奔跑！",
+                "有时候拖拖拉拉的原因真的不是因为“懒”，而是“这破事儿我实在TMD不想做”。",
+                "你不勇敢，没人替你坚强。",
+                "如果心胸不似海，又怎能有海一样的事业。",
+                "只有经历过地狱般的折磨，才有征服天堂的力量。只有流过血的手指才能弹出世间的绝唱。",
+                "流过泪的眼睛更明亮，滴过血的心灵更坚强！",
+                "志在山顶的人，不会贪念山腰的风景。一点点语录网",
+                "前有阻碍，奋力把它冲开，运用炙热的激情，转动心中的期待，血在澎湃，吃苦流汗算什么。",
+                "对的，坚持；错的，放弃！",
+                "宁愿跑起来被拌倒无数次，也不愿规规矩矩走一辈子。就算跌倒也要豪迈的笑。",
+                "不要生气要争气，不要看破要突破，不要嫉妒要欣赏，不要托延要积极，不要心动要行动。",
+                "没有不老的誓言，没有不变的承诺，踏上旅途，义无反顾！",
+                "态度决定一切，实力捍卫尊严！人要经得起诱惑耐得住寂寞！",
+                "你可以很有个性,但某些时候请收敛。",
+                "自己选择的路、跪着也要把它走完。",
+                "只做第一个我，不做第二个谁。",
+                "成功需要成本，时间也是一种成本，对时间的珍惜就是对成本的节约。",
+                "行动是治愈恐惧的良药，而犹豫、拖延将不断滋养恐惧。",
+                "投资知识是明智的，投资网络中的知识就更加明智。",
+                "没有天生的信心，只有不断培养的信心。",
+                "忍别人所不能忍的痛，吃别人所别人所不能吃的苦，是为了收获得不到的收获。",
+                "销售是从被别人拒绝开始的。",
+                "好咖啡要和朋友一起品尝，好机会也要和朋友一起分享。",
+                "生命之灯因热情而点燃，生命之舟因拼搏而前行。",
+                "拥有梦想只是一种智力，实现梦想才是一种能力。",
+                "只有一条路不能选择——那就是放弃的路；只有一条路不能拒绝——那就是成长的路。",
+                "每天早上醒来，你荷包里的最大资产是24个小时——你生命宇宙中尚未制造的材料。",
+                "如果要挖井，就要挖到水出为止。",
+                "成功决不喜欢会见懒汉，而是唤醒懒汉。",
+                "未遭拒绝的成功决不会长久。",
+                "外在压力增加时，就应增强内在的动力。",
+                "股票有涨有落，然而打着信心标志的股票将使你永涨无落。",
+                "只要我们能梦想的，我们就能实现。",
+                "凡事要三思，但比三思更重要的是三思而行。",
+                "做的技艺来自做的过程。",
+                "成功的信念在人脑中的作用就如闹钟，会在你需要时将你唤醒。",
+                "伟大的事业不是靠力气、速度和身体的敏捷完成的，而是靠性格、意志和知识的力量完成的。",
+                "只有千锤百炼，才能成为好钢。",
+                "对于最有能力的领航人风浪总是格外的汹涌。",
+                "知识给人重量，成就给人光彩，大多数人只是看到了光彩，而不去称量重量。",
+                "最重要的就是不要去看远方模糊的，而要做手边清楚的事。",
+                "征服畏惧、建立自信的最快最确实的方法，就是去做你害怕的事，直到你获得成功的经验。",
+                "世上最重要的事，不在于我们在何处，而在于我们朝着什么方向走。",
+                "行动不一定带来快乐，而无行动则决无快乐。"];
+
+            var min = 0, max = famous.length,
+                random = parseInt(Math.random() * max + min);
+
+            $("#famous").text("console.log(\"" + famous[random] + "\")");
+        };
+
+        controller.share = function () {
+            var tpl = '<div class="bdsharebuttonbox">'
+                    //+'<a href="#" class="bds_more" data-cmd="more"></a>'
+                + '<span style="display:block;line-height: 22px;color: #00b38a;text-align: center;">分享</span>'
+                + '<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>'
+                + '<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>'
+                + '<a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>'
+                + '<a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>'
+                + '<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>'
+                + '<a href="javascript:;" class="go-top" title="返回顶部" onclick="$.goTop()"><i class="f-icon icon-arrow-up"></a>'
+                + '</div>';
+
+            window._bd_share_config = {
+                "common": {
+                    "bdSnsKey": {},
+                    "bdText": "",
+                    "bdMini": "1",
+                    "bdMiniList": false,
+                    "bdPic": "",
+                    "bdStyle": "0",
+                    "bdSize": "32"
+                },
+                "share": {}
+            };
+
+            $body.append(tpl);
+            require(['http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)]);
+
+            $.goTop = function () {
+                $("html,body").animate({"scrollTop": 0}, 800);
+            }
+        };
+
+        controller.rmb = function () {
+            var curDate = new Date(),
+                curDateTime = curDate.getTime();
+
+            var $rmb01 = $id("rmb01"),
+                $unMainTop = $id("unMainTop"),
+                $unSidebar02 = $id("unSidebar02"),
+                $unContentTop = $id("unContentTop"),
+                $unPageLeft = $id("unPageLeft"),
+                $unArticleBottom =  $id("unArticleBottom"),
+                $unArticleBottomText = $id("unArticleBottomText"),
+                $unHome01 =  $id("unHome01"),
+                $unSiteTop = $id("unSiteTop"),
+                $sectionUn100Home = $id("section-un-100-home"),
+                $sidebarFix = $id('sidebarFix');
+//http://www.juxiangyou.com/r6393023
+            var rmb01Tpl = '<a href="http://www.ttz.com/fd/54626206" target="_blank" style="display: block; border: #ddd solid 1px;"><img src="http://www.51xuediannao.com/uploads/un/ttz-358-143.jpg"/></a>';
+
+            //var unMainTpl = '<a href="http://www.juxiangyou.com/floor/recom/6393023" target="_blank" class="fn-db" style="border:#ddd solid 1px"><img src="http://www.51xuediannao.com/uploads/un/bxd.jpg" width="100%"></a>';
+            var unHome01Tpl = '<a href="http://jisuapp.cn/index.php?r=pc/Webapp/AppTpl" target="_blank"><img src="http://www.51xuediannao.com/uploads/un/home-360.jpg"/></a>';
+            var unSiteTop = '<a href="http://jisuapp.cn/index.php?r=pc/Webapp/AppTpl" target="_blank"><img src="http://www.51xuediannao.com/uploads/un/site-top.gif"/></a>';
+
+            var unMainTpl = '<a href="http://s.click.taobao.com/t?e=m%3D2%26s%3DrqO8Ci6pZHEcQipKwQzePCperVdZeJviEViQ0P1Vf2kguMN8XjClArjiBOy3NI6VDbznjHzzvhyOI%2Fp28ccy0nFq%2FrL1f5TWPSE1z%2BNLH48Nt%2FlK6areHTDVuRn8ddiDsEVVC24eqozO54LQ%2FVw1L9X5LHh3Z8M%2BWS6ALZVeqlk9XUfbPSJC%2F06deTzTIbffYpyF7ku%2BxKiARjG3WS8EfFxfvOyje0ynomfkDJRs%2BhU%3D" target="_blank" class="fn-fl">'
+                + '<img src="http://www.51xuediannao.com/uploads/un/ali-880-90.jpg">'
+                + '</a>'
+                + '<a href="http://s.click.taobao.com/t?e=m%3D2%26s%3DTuK1BEZV7WwcQipKwQzePCperVdZeJviEViQ0P1Vf2kguMN8XjClArjiBOy3NI6VRPRZn0hn1zuOI%2Fp28ccy0nFq%2FrL1f5TWPSE1z%2BNLH48imIS4aFMJ%2BjDVuRn8ddiDsEVVC24eqozO54LQ%2FVw1L76HrfO5Rkxh34mdTsZIUcD2w6Q44RZngUgmogNW4Mo50TtxhZk7Tmxk72ryzaKzWiGFCzYOOqAQ" target="_blank" class="fn-fr">'
+                + '<img src="http://www.51xuediannao.com/uploads/un/ali-300X90.jpg">'
+                + '</a>';
+
+            var unBanner = '<a style="display: block;width: 1238px;" href="http://www.seophb.com/shizhan/?un=lanren" target="_blank">'
+                + '<img src="http://www.51xuediannao.com/uploads/un/seo_yiqihang.jpg" width="100%">'
+                + '</a>';
+            /*var unContentTop =  '<a style="display: block;width: 100%;margin-bottom: 26px;" href="http://s.click.taobao.com/t?e=m%3D2%26s%3DrqO8Ci6pZHEcQipKwQzePCperVdZeJviEViQ0P1Vf2kguMN8XjClArjiBOy3NI6VDbznjHzzvhyOI%2Fp28ccy0nFq%2FrL1f5TWPSE1z%2BNLH48Nt%2FlK6areHTDVuRn8ddiDsEVVC24eqozO54LQ%2FVw1L9X5LHh3Z8M%2BWS6ALZVeqlk9XUfbPSJC%2F06deTzTIbffYpyF7ku%2BxKiARjG3WS8EfFxfvOyje0ynomfkDJRs%2BhU%3D" target="_blank" class="fn-fl">'
+             +'<img src="http://www.51xuediannao.com/uploads/un/ali-880-90.jpg" width="100%">'
+             +'</a>';
+             */
+            var unContentTop = '<a style="display: block;width: 100%;margin-bottom: 26px;" href="http://www.seophb.com/shizhan/?un=lanren" target="_blank" class="fn-fl">'
+                + '<img src="http://www.51xuediannao.com/uploads/un/seo_yiqihang.jpg" width="100%">'
+                + '</a>';
+
+            var unPageLeftTpl = '<a style="display: block;width: 100%; border: #ddd solid 1px; height: 248px;" href="http://cloud.keji01.com/?un=lanren&size=300_250" target="_blank">'
+                + '<img src="http://www.51xuediannao.com/uploads/un/keji01-300.jpg" width="100%">'
+                + '</a>';
+
+            var unArticleBottomTpl = '<a style="display: block;border: #ddd solid 1px; height: 88px;overflow: hidden;" href="http://cloud.keji01.com/?un=lanren&size=720_90" target="_blank">'
+                + '<img src="http://www.51xuediannao.com/uploads/un/keji01-720-90.jpg" width="100%">'
+                + '</a>';
+
+            var bxw1 = '<a class="pceggs" target="_blank" href="http://www.pceggs.com/i.aspx?c=1-12221683">'
+                + '<p><strong>同样</strong>的玩各大<strong>网游</strong>；</p>'
+                + '<p><strong>不同</strong>的是这里的<strong>游戏奖积分</strong>。</p>'
+                + '<p>积分可以兑换各种虚拟、实物奖品。</p>'
+                + '<p>赚钱途径：</p>'
+                + '<p><strong>1、</strong>游戏网赚 </p>'
+                + '<p><strong>2、</strong>购物返利+积分</p>'
+                + '<p><strong>3、</strong>数字竞猜游戏玩运气</p>'
+                + '<p class="lrbtn"><span class="txt2">没有执行力干啥都不赚钱</span> →GO</p>'
+                + '</a>';
+            var ttz = '<a class="pceggs" target="_blank" href="http://www.ttz.com/fd/54626206" style="width: 278px;">'
+                + '<p><strong>同样</strong>的玩各大<strong>网游</strong>；</p>'
+                + '<p><strong>不同</strong>的是这里的<strong>游戏奖积分</strong>。</p>'
+                + '<p>可兑换人民币，<strong style="font-size: 120%; font-family:Arial">3元</strong> 即可提现</p>'
+                + '<p>赚钱途径：</p>'
+                + '<p><strong>1、</strong>游戏网赚 </p>'
+                + '<p><strong>2、</strong>打码赚钱/看广告赚钱</p>'
+                + '<p><strong>3、</strong>数字竞猜游戏玩运气</p>'
+                + '<p class="lrbtn"><span class="txt2">没有执行力干啥都不赚钱</span> →GO</p>'
+                + '</a>';
+
+            var textMin = '<a href="http://www.pceggs.com/i.aspx?c=1-12221683" target="_blank" style="line-height:1.8;display: block; padding:8px;">'
+                + '<p style="color: #00b38a">试玩游戏，也能赚钱</p>'
+                + '<p style="color: #E84C3D">1块钱也能提现</p>'
+                + '<p style="color: #E84C3D;text-decoration: underline">→立即行动</p>'
+                + '</a>';
+
+            //2016-12-02 下午开始
+            var layui = '<a style="display: block;width: 100%;margin-bottom: 26px;" href="http://layim.layui.com/?from=lanren" target="_blank">'
+                + '<img src="http://cdn.layui.com/images/layim-12.png" width="100%">'
+                + '</a>';
+
+            if (typeof writer != "undefined" && writer == "小院儿") {
+                unMainTpl = '<a href="http://www.juxiangyou.com/floor/recom/14212336" target="_blank" class="fn-db" style="border:#ddd solid 1px"><img src="http://www.51xuediannao.com/uploads/un/bxd.jpg" width="100%"></a>';
+            }
+
+            //setHtml($unMainTop,unMainTpl);
+            if (!tools.isMobile()) {
+                setHtml($rmb01, rmb01Tpl);
+                setHtml($unHome01,bxw1);
+
+                setHtml($unPageLeft, unPageLeftTpl); //页面左边广告
+
+                setHtml($unArticleBottom, unArticleBottomTpl);
+
+                setHtml($unArticleBottomText, textMin);
+
+                setHtml($sidebarFix, ttz);
+
+                if (curDateTime > new Date("2017/06/20").getTime() && curDateTime < new Date("2017/07/22").getTime()) {
+                    setHtml($unHome01,unHome01Tpl);
+                }
+                if (curDateTime > new Date("2017/06/20").getTime() && curDateTime < new Date("2017/07/22").getTime()) {
+                    setHtml($unSiteTop,unSiteTop);
+                }
+
+                if (curDateTime > new Date("2016/08/29").getTime() && curDateTime < new Date("2016/09/30").getTime()) {
+                    setHtml($unContentTop, unContentTop);
+                }
+
+                if (curDateTime > new Date("2016/12/02").getTime() && curDateTime < new Date("2017/01/03").getTime()) {
+                    setHtml($unSidebar02, layui);
+                }else{
+                    setHtml($unSidebar02, bxw1);
+                }
+
+                if (curDateTime > new Date("2017/08/30").getTime() && curDateTime < new Date("2017/9/30").getTime()) {
+                    setHtml($unMainTop, unBanner);   //顶部横幅
+                }
+
+                if (curDateTime > new Date("2017/05/23").getTime() && curDateTime < new Date("2017/06/25").getTime()) {
+                    var ad = '<a style="display: block;width: 100%;" href="https://yun.22.cn/?s=lanren" target="_blank">'
+                        + '<img src="http://www.51xuediannao.com/uploads/un/22cn.jpg" width="100%">'
+                        + '</a>';
+                    setHtml($sectionUn100Home, ad);   //顶部横幅
+                    $sectionUn100Home && ($sectionUn100Home.style.display = 'block');
+                }
+
+                //阿里妈妈
+                /*
+                if (constant.typeid == '62') {
+                    $("#intro").after('<a href="https://s.click.taobao.com/t?e=m%3D2%26s%3DlkT%2FnuGCF6IcQipKwQzePDAVflQIoZepK7Vc7tFgwiFRAdhuF14FMT9wH4R1%2BAbC1aH1Hk3GeOjPx3R8uh7bKx9mYizFV%2BANQ2CplEBDsb1OtDHWGPFA3pcc6kYzetbXxgxdTc00KD8%3D" target="_blank" style="display: block;" title="点击抢购"><img src="http://www.51xuediannao.com/uploads/un/mama-jths.jpg" alt="" width="100%"></a>');
+                    $(".page-video").after('<a href="https://s.click.taobao.com/t?e=m%3D2%26s%3DlkT%2FnuGCF6IcQipKwQzePDAVflQIoZepK7Vc7tFgwiFRAdhuF14FMT9wH4R1%2BAbC1aH1Hk3GeOjPx3R8uh7bKx9mYizFV%2BANQ2CplEBDsb1OtDHWGPFA3pcc6kYzetbXxgxdTc00KD8%3D" target="_blank" style="display: block;" title="点击抢购"><img src="http://www.51xuediannao.com/uploads/un/mama-jths-2.jpg" alt="" width="100%"></a>')
+                }*/
+
+            }
+
+            // u2696770 -- 360*300 / u470987 -- 300X250 / u2703773 -- 728X90 / u246538 -- 250X250 / u2756440--250X250-un3 / u2756443 -- 250X250-un4  / u2798358---900X90-top
+            if (!tools.isMobile()) {
+                //var kongQueOpen = tools.cookie.getCookie('kongQueOpen');
+                /*require(['http://cpro.baidustatic.com/cpro/ui/c.js'], function () {
+                    BAIDU_CLB_fillSlotAsync("u2696770", "unHome01");           //360X300
+                    BAIDU_CLB_fillSlotAsync("u470987", "unPageLeft");         //300X250
+
+                    BAIDU_CLB_fillSlotAsync("u470987", "unBodyTop");         //300X250
+                    //BAIDU_CLB_fillSlotAsync("u2728921","unContentTop"); //900X90
+                    BAIDU_CLB_fillSlotAsync("u2703773", "unArticleBottom"); //728X90
+                    BAIDU_CLB_fillSlotAsync("u2728921", "unRelatedBottom"); //900X90
+
+                    BAIDU_CLB_fillSlotAsync("u2756440", "unSidebar03");        //250X250 unSidebar03
+                    //BAIDU_CLB_fillSlotAsync("u2756443","unSidebar04");        //250X250 unSidebar04
+                    BAIDU_CLB_fillSlotAsync("u246538", "sidebarFix");        //250X250
+                    BAIDU_CLB_fillSlotAsync("u2798358", "unContentTop"); //900X90-top
+
+                    if (!kongQueOpen || kongQueOpen == "0") {
+                        BAIDU_CLB_fillSlotAsync("u2805495", "kongQue"); //孔雀
+                        tools.cookie.setCookie('kongQueOpen', '1', 's300');
+                    }
+
+                    if (constant.typeid == -1) {
+                        BAIDU_CLB_fillSlotAsync("u2808510", "unStart1"); //900X90-top
+                        BAIDU_CLB_fillSlotAsync("u2808512", "unEnd1"); //900X90-top
+                        $(".section-un").show();
+                    }
+
+                });
+
+                require(['http://su.bdimg.com/static/dspui/js/ue.js']);*/
+
+            } else {
+                /*require(['http://cpro.baidustatic.com/cpro/ui/cm.js'], function () {
+                    BAIDU_CLB_fillSlotAsync("u2735045", "unPageLeft"); //6:5
+                    BAIDU_CLB_fillSlotAsync("u2735038", "unArticleBottom"); //20:5
+                    BAIDU_CLB_fillSlotAsync("u2735045", "unRelatedBottom"); //6:5
+                })*/
+            }
+
+            var fileRef = document.createElement('script');         //创建标签
+            //fileRef.src = 'https://adman.henghost.com/data/forum-20161114110745.js';              //文件的地址
+
+            //document.getElementById('unSidebar02').appendChild(fileRef)
+            //$("#unSidebar02").append('<script charset="utf-8" language="JavaScript" type="text/javascript" src="https://adman.henghost.com/data/forum-20161114110745.js"></script>')
+        };
+
+        controller.fileUrl = function () {
+            if (typeof constant.fileUrl == 'undefined' || constant.fileUrl == "") {
+                return
+            }
+            var flieUrl = constant.fileUrl,
+                fileTpl = '<span class="fn-dib"><a class="fn-btn btn-success" href="${fileUrl}" rel="nofollow" target="_blank">立即下载</a> ${tqm}</span>',
+                $pageFile = $(".page-file"),
+                _flieUrl = [],
+                tqm = "";
+            if (flieUrl) {
+                _flieUrl = flieUrl.split("##");
+                if (_flieUrl.length == 2) {
+                    tqm = '<em>提取码：' + _flieUrl[1] + '</em>';
+                }
+                $pageFile.html(tools.htmlTemplate(fileTpl, {fileUrl: _flieUrl[0], tqm: tqm})).show();
+            }
+        };
+
+        controller.prevNext = function () {
+
+            if (typeof aid == "undefined" || document.body.clientWidth < 1400) {
+                return
+            }
+
+            var $context = $(".context");
+            if (!$context.length) {
+                return
+            }
+
+            var tpl = '<a href="${up}" class="page-prev" style="${showUp}" title="${upTitle}">&lt;</a><a href="${next}" class="page-next" style="${showNext}" title="${nextTitle}">&gt;</a>';
+
+            var $up = $context.children(".up").children("a"),
+                $next = $context.children(".next").children("a"),
+                up = "javascript:;",
+                next = "javascript:;",
+                upTitle = "",
+                nextTitle = "",
+                showUp = "display:none",
+                showNext = "display:none",
+                _html;
+
+            if ($up.length) {
+                up = $up.attr("href");
+                showUp = "display:block";
+                upTitle = $up.text();
+            }
+            if ($next.length) {
+                next = $next.attr("href");
+                showNext = "display:block";
+                nextTitle = $next.text();
+            }
+
+            _html = tools.htmlTemplate(tpl, {
+                up: up,
+                next: next,
+                showUp: showUp,
+                showNext: showNext,
+                upTitle: upTitle,
+                nextTitle: nextTitle
+            });
+            $body.append(_html)
+        };
+
+        controller.fixRmb = function () {
+            var $sidebarFix = $("#sidebarFix");
+            if (!$sidebarFix.length) {
+                return
+            }
+
+            //var fix = '<a target="_blank" href="http://www.pceggs.com/i.aspx?c=1-12221683"><img src="images/fix.gif" alt=""/></a>';
+            //$sidebarFix.html(rmb01Tpl);
+
+            var $main = $(".main"),
+                $sidebarEnd = $(".sidebar-end"),
+                mainH = $main.height(),
+                sidebarEndH = $sidebarEnd.height();
+            if ((mainH - sidebarEndH) < 400) {
+                return
+            }
+            //右边滚动到一定距离浮动
+            $win.on("scroll", function () {
+                fixRbm();
+            });
+            function fixRbm() {
+                if ($win.scrollTop() > sidebarEndH + 400) {
+                    $sidebarFix.css("position", "fixed");
+                } else {
+                    $sidebarFix.css("position", "static");
+                }
+            }
+
+        };
+
+        controller.runCode = function () {
+            var $runCode = $(".runCode");
+            if (!$runCode.length) {
+                return
+            }
+            //代码运行
+            var str2html = function (str) {
+                var obj = {
+                    "&lt;": "<",
+                    "&gt;": ">"
+                };
+                for (var key in obj) {
+                    var reg = new RegExp(key, 'gi');
+                    str = str.replace(reg, obj[key]);
+                }
+                return str;
+            };
+
+            $.runCode = function () {  //定义一个运行代码的函数，
+                var $this = $(this),
+                    codeStr = $this.closest("pre").text(),
+                    type = $runCode.data("type"),
+                    code = str2html(codeStr.replace('运行代码', ""));
+
+                var _write = '<!doctype html><html><head><meta charset="utf-8"></head><body>' + code + '</body></html>';
+                if (type == "js") {
+                    _write = '<!doctype html><html><head><meta charset="utf-8"></head><body><script>' + code + '</script></body></html>';
+                }
+                if (type == "all") {
+                    _write = code;
+                }
+
+                var newWin = window.open('', '', '');  //打开一个窗口并赋给变量newwin。
+                newWin.opener = null;               // 防止代码对自身页面修改
+                newWin.document.write(_write);        //向这个打开的窗口中写入代码code，这样就实现了运行代码功能。
+                newWin.document.close();
+            };
+
+            $runCode.append('<a onclick="$.runCode.call(this)" class="run-code-btn">运行代码</a>');
+        };
+
+        controller.openArticleMore = function (h) {
+            var $articleMoreBtn = $(".body-more-btn"),
+                $article = $(".page-body"),
+                open = false;
+            var _height = $articleMoreBtn.data('height') || h || 700;
+
+            if (!$articleMoreBtn.length || $article.height() < _height - 1) {
+                return
+            }
+
+            controller.fixRmb();
+
+            $article.css({"padding-bottom": "70px", "max-height": _height + "px"});
+            $articleMoreBtn.text("展开全文↓").show();
+
+            $articleMoreBtn.on("click", function () {
+                var maxHeight = open ? _height + "px" : "none",
+                    text = open ? "展开全文↓" : "收起文章↑";
+                $article.css("max-height", maxHeight);
+                $articleMoreBtn.text(text);
+                open = !open;
+            });
+        };
+
+        controller.atlasVerBig = function () {
+            if (typeof atlasVer == "undefined") {
+                return
+            }
+            var $atlasVer = $("#atlasVer"),
+                imgArr = [];
+            $atlasVer.children("li").each(function () {
+                var $this = $(this),
+                    src = $this.children("img").attr("src");
+                imgArr.push('<li><img src="' + src + '" alt=""></li>');
+                $this.append('<a href="' + src + '" target="_blank" class="atlas-ver-img-link" title="点击查看大图"><i class="f-icon icon-search"></a>')
+            });
+
+
+            controller.fullScreenAlbumFocus(imgArr);
+        };
+
+        controller.fullScreenAlbumFocus = function (imgArr) {
+            if (typeof atlasVer == "undefined") {
+                return
+            }
+
+            var fullScreenAlbumFocus = null;
+            var $btnView = $(".btn-view"),
+                $fullScreenAlbum = $(".full-screen-album");
+
+            $fullScreenAlbum.find(".scrolllist").html(imgArr.join(""));
+
+            $fullScreenAlbum.find("li").preventScroll();
+
+            require(['scroll'], function () {
+
+                $btnView.on("click", function () {
+                    $fullScreenAlbum.show();
+                    fullScreenAlbumFocus = new LrScroll2($("#fullScreenAlbumFocus"), {
+                        scrollType: "fade",
+                        touchTarget: 'fullScreenAlbumFocus',
+                        onlyOne: true,
+                        hasResize: true,
+                        sNum: 1,
+                        auto: 0,
+                        navNumShow: false
+                    });
+                });
+
+                $fullScreenAlbum.on("click", ".close", function () {
+                    $fullScreenAlbum.hide();
+                    fullScreenAlbumFocus = null;
+                });
+
+            });
+        };
+
+        controller.home = function () {
+
+            var setTab = function ($tabBox, $tabShow, index) {
+                var href = this.href,
+                    $more = $tabBox.find(".more");
+                $more.html('<a href="' + href + '">&gt;&gt;查看更多</a>');
+
+                $tabShow.find('img[data-original]').lazyload();
+            };
+
+            $(".section-jquery").simTab('mouseenter', 400, setTab);
+
+            $(".section-sucai").simTab('mouseenter', 400, setTab);
+
+            controller.famous();
+
+        };
+
+        controller.list = function () {
+        };
+
+        controller.pageVideo = function () {
+            if (typeof constant.video == 'undefined' || constant.video == "") {
+                return
+            }
+            if (tools.isMobile()) {
+                $(".bread-nav").hide();
+                $(".footer").hide();
+                $(".page-video").on("click", function () {
+                    $(this).html('<video src="http://files.51xuediannao.com/' + constant.video + '" controls="controls" autoplay="autoplay" style="width:100%; height:100%;"></video>');
+                }).show();
+            } else {
+                $(".page-video").html('<embed src="http://files.51xuediannao.com/' + constant.video + '" autostart="true" loop="true" width="400" height="300"></embed>').show();
+            }
+        };
+
+        controller.article = function () {
+            controller.runCode();
+
+
+            controller.atlasVerBig();
+
+            controller.fileUrl();
+
+            controller.pageVideo();
+
+            var pre = document.getElementsByTagName('pre');
+            if (pre) {
+                require(['highlight'], function () {
+                    hljs.initHighlightingOnLoad();
+                    for (var i = 0; i < pre.length; i++) {
+                        hljs.highlightBlock(pre[i]);
+                    }
+                })
+            }
+
+            if (typeof constant.typeid != 'undefined') {
+                /*if($(".ptit").text().indexOf("微信")>-1){
+
+                 }*/
+                var typeidStr = '45,51,40,36,208,3,15,84,63,35,72';
+                var qq1 = constant.aid=='1283' ? '71378882' : '4188479';
+                if (typeidStr.indexOf(constant.typeid) > -1) {
+                    $(".page-cite").append('<span class="t-primary">QQ交流群:'+qq1+'</span>');
+                }
+
+                if (constant.typeid == "62") {
+                    $(".page-cite").append('<span class="t-primary">DIY电脑 QQ交流群:4161796</span>');
+                }
+            }
+
+            if (typeof constant.articleAttr != 'undefined') {
+                if (constant.articleAttr.indexOf('b') > -1) {
+                    controller.openArticleMore(2200);
+                }
+            }
+
+
+            //调用打赏
+            var $btnDonate = $(".btn-donate");
+            if ($btnDonate.length) {
+                controller.donate($btnDonate);
+            }
+
+        };
+
+        controller.video = function () {
+            var $video = $("#video"),
+                $embed = $video.find("embed"),
+                winH = $win.height();
+
+            // $embed.css({"height":winH-300});
+            $("html,body").animate({"scrollTop": 84}, 600);
+
+            $(".ptit").append(' <em style="font-size: 16px">（视频密码：51xuediannao）</em>');
+
+            var $downVideo = $("#downVideo"),
+                size = [0, 180];
+            if (document.documentElement.clientWidth < 768) {
+                size = [document.documentElement.clientWidth - 20, 180];
+            }
+            var downVideo = new modules.Pop($downVideo, {
+                size: size,
+                title: "视频下载",
+                con: '<h4>'
+                + '<p class="fn-mb16">视频较大，不提供在线下载</p>'
+                + '<p class="fn-mb16">下载无广告视频，请联系QQ：<a href="http://wpa.qq.com/msgrd?v=3&uin=191221838&site=qq&menu=yes">191221838</a> 索取</p>'
+                + '</h4>',
+                loadAfter: function () {
+
+                }
+            });
+            $downVideo.on("click", function () {
+                downVideo.open();
+                return false;
+            });
+
+        };
+
+        controller.donate = function ($el) {
+            var size = [0, 530];
+            if (document.documentElement.clientWidth < 768) {
+                size = [document.documentElement.clientWidth - 20, 530];
+            }
+            var donatePop = new modules.Pop($el, {
+                size: size,
+                title: '<i class="f-icon icon-like" style="font-size: 20px;"></i> 打赏支持',
+                con: '<div style="text-align: center;">'
+                + '<p class="fn-mb16">网站的广告联盟收入，实在是低的可怜，<em>一天就几块钱</em>，</p>'
+                + '<p class="fn-mb16"><em>服务器成本费用都不够</em></p>'
+                + '<p class="fn-mb16">如果您愿意支持一下，给打赏几两银子</p>'
+                + '<p class="fn-mb16"><img src="/images/donate-zfb.jpg" alt="" style="width: 240px;"></p>'
+                + '<p class="fn-mb16">有钱捧个钱场，没钱捧个人场</p>'
+                + '</div>',
+                loadAfter: function () {
+
+                }
+            });
+            $el.on("click", function () {
+                donatePop.open();
+            })
+        };
+
+        controller.shop = function () {
+        };
+
+        controller.tag = function () {
+        };
+
+        controller.mainController();
+
+        return controller
+    });

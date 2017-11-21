@@ -1,0 +1,231 @@
+function LrScroll2($box, config) {
+            this.opts = $.extend(true, {
+                touchTarget: null,   //#focus
+                onlyOne: false,
+                hasResize: false,
+                oneSize: 0,
+                sNum: 2,			        //滚动单位个数
+                spacing: 0,				//单位间距
+                rowNum: 1,				//一列上有几个
+                auto: false,            //false|滚动间隔时间 如：3000
+                numberNav: false,
+                fullScreen: false,
+                anTime: 400,
+                scrollType: "hor",       // hor ver fade
+                curItemClass:"lr-scroll-cur",
+                $prev:"",
+                $next:"",
+                navNumShow: true,
+                makeNav: function () {
+                    //生成数字导航，可以自定义，比如可以自定义生成缩略图导航 注意：不管结构/标签怎么变，s-nav-link 类名一定要保留 如：<li class="s-nav-link"></li>
+                    var self = this;
+                    var i = 0, temp = [];
+                    for (i; i < self.pages; i++) {
+                        self.opts.navNumShow ? temp.push('<a class="s-nav-link">' + (i + 1) + '</a>') : temp.push('<a class="s-nav-link"></a>');
+                    }
+                    self.$scrollNav.html(temp.join(""));
+                },
+                onInit: function () {
+                },
+                animationEnd: function () {
+                }
+            }, config);
+            this.$win = $(window);
+            this.$box = $box;
+            this.$prev = this.opts.$prev||this.$box.find(".prev");
+            this.$next = this.opts.$next||this.$box.find(".next");
+            this.$scrollNav = this.$box.find(".scrollnav");
+            this.$scrollCon = this.$box.find(".scrollcon");
+            this.$scrollList = this.$box.find(".scrolllist");
+            this.$lis = this.$scrollList.children("li");
+            this.liLen = this.opts.oneSize ? Math.ceil(this.$scrollList.width() / this.opts.oneSize) : this.$lis.length;
+            this.pages = this.opts.oneSize ? Math.ceil(this.$scrollList.width() / this.opts.oneSize * this.opts.sNum) : Math.ceil(this.liLen / this.opts.sNum);
+            this.pageIndex = 0;
+            this.scrolling = 0;
+            this.pause = 0;
+            this.size = {
+                scrollListW: 0,
+                scrollListH: 0,
+                scrollSize: 0,
+                scrollSizeCur: 0
+            };
+            this.init();
+        }
+
+LrScroll2.prototype = {
+            init: function () {
+                var This = this;
+                this.setSize();
+                this.bindEvent();
+                this.opts.makeNav.call(this);
+
+                this.$box.addClass('scroll-' + this.opts.scrollType);
+                this.scrollNavLinks = this.$scrollNav.find(".s-nav-link");
+                this.scrollNavLinks.eq(0).trigger("click");
+                this.$lis.css({"margin-right": this.opts.spacing});
+
+                this.opts.scrollType=="fade" && this.zIndex();
+
+                //自动滚动
+                if (this.opts.auto && typeof this.opts.auto == "number") {
+                    (function () {
+                        clearTimeout(this.timer);
+                        !This.pause && This.$next.trigger("click");
+                        This.timer = setTimeout(arguments.callee, This.opts.auto)
+                    })();
+                }
+                this.opts.onInit.call(this);
+            },
+            zIndex:function(){
+                /*var zIndex =  this.liLen;
+                this.$scrollList.children("li").each(function(i){
+                    $(this).css({"z-index":zIndex});
+                    zIndex--;
+                });*/
+            },
+            setSize: function () {
+                var $first = this.$lis.eq(0),
+                    $firstW = !this.opts.oneSize ? $first.width() : this.opts.oneSize,
+                    opts = this.opts;
+                if (this.opts.fullScreen) {
+                    $firstW = this.$win.width();
+                    this.$lis.css({"width": $firstW});
+                }
+                if (this.opts.onlyOne) {
+                    $firstW = this.$scrollCon.width();
+                    this.$lis.css({"width": $firstW});
+                }
+                if (this.opts.oneSize || this.opts.onlyOne) {
+                    this.size.scrollListW = (opts.scrollType == "hor") ? ($firstW + opts.spacing) * this.liLen : this.$scrollCon.width();
+                    this.size.scrollSize = (opts.scrollType == "hor") ? ($firstW + opts.spacing) * opts.sNum : this.$scrollCon.height();
+                } else {
+                    this.size.scrollListW = (opts.scrollType == "hor") ? ($firstW + opts.spacing) * this.liLen : this.$scrollCon.width();
+                    this.size.scrollSize = (opts.scrollType == "hor") ? ($firstW + opts.spacing) * opts.sNum : this.$scrollCon.height();
+                }
+                this.$scrollList.css({"width": this.size.scrollListW + opts.spacing});
+            },
+            bindEvent: function () {
+                var This = this;
+                this.$box.off().hover(
+                    function () {
+                        This.pause = 1;
+                    },
+                    function () {
+                        This.pause = 0;
+                    }
+                );
+                this.$prev.off().on("click", function () {
+                    if (This.scrolling || This.pageIndex < 0) {
+                        return
+                    }
+                    if (This.pageIndex == 0) This.pageIndex = This.pages;
+                    This.scrolling = 1;
+                    This.pageIndex--;
+                    This.animation(-This.size.scrollSize * This.pageIndex);
+                });
+                this.$next.off().on("click", function () {
+                    if (This.scrolling) {
+                        return
+                    }
+                    This.scrolling = 1;
+                    This.pageIndex++;
+                    if (This.pageIndex == This.pages) This.pageIndex = 0;
+                    This.animation(-This.size.scrollSize * This.pageIndex);
+                });
+                this.$scrollNav.off().on("click", ".s-nav-link", function () {
+                    var $this = $(this),index;
+                    if($this.hasClass("cur")){
+                        return
+                    }
+
+                    index = $this.index();
+                    $this.addClass("cur").siblings().removeClass("cur");
+
+                    This.scrolling = 1;
+                    This.pageIndex = index;
+                    if(This.opts.scrollType == "fade"){
+                        //淡入淡出
+                        This.animationFade("a");
+                    }else{
+                        This.animation(-This.size.scrollSize * This.pageIndex);
+                    }
+                });
+                if (this.opts.fullScreen || this.opts.hasResize) {
+                    var timer = 0, index = 0;
+                    this.$win.off("resize.scroll").on("resize.scroll", function () {
+                        clearTimeout(timer);
+                        timer = setTimeout(function () {
+                            This.setSize();
+                            //全屏的话窗口改变要重置left值
+                            if(This.opts.scrollType=="hor"){
+                                This.$scrollList.css("left", -This.size.scrollSize * This.pageIndex);
+                            }
+                            clearTimeout(timer);
+                        }, 100);
+                    })
+                }
+
+                if (This.opts.touchTarget && typeof touch == "object") {
+                    touch.on("#" + This.opts.touchTarget, 'touchstart', function (ev) {
+                        ev.preventDefault();
+                    });
+
+                    var target = document.getElementById(This.opts.touchTarget);
+                    touch.on(target, 'swiperight', function (ev) {
+                        //log("向右滑动.");
+                        This.$prev.trigger("click");
+                    });
+
+                    touch.on(target, 'swipeleft', function (ev) {
+                        //log("向左滑动.");
+                        This.$next.trigger("click");
+                    });
+                }
+
+            },
+            animation: function (size) {
+
+                this.$scrollNav.find("a").eq(this.pageIndex).addClass("cur").siblings().removeClass("cur");
+
+                if(this.opts.onlyOne||this.opts.scrollType == "fade"){
+                    //this.$scrollList.children("li").eq(0).addClass(this.opts.curItemClass);
+                    //this.$lis.eq(this.pageIndex).addClass(this.opts.curItemClass).siblings().removeClass(this.opts.curItemClass);
+                }
+
+                if(this.opts.scrollType == "fade"){
+                    //淡入淡出
+                    this.animationFade()
+                }else{
+                    this.animationLeftTop(size);
+                }
+            },
+            animationFade:function(clickTarget){
+                var This = this;
+                var nextIndex =  This.pageIndex;
+
+                this.$scrollList.children("li").eq(nextIndex)
+                    .animate({"opacity":1}, 800)
+                    .siblings("li").animate({"opacity":0}, 800, function () {
+                        This.scrolling = 0;
+                        setTimeout(function(){
+                            This.$scrollList.children("li").eq(nextIndex).addClass(This.opts.curItemClass).siblings().removeClass(This.opts.curItemClass);
+                        },100);
+
+                        This.opts.animationEnd.call(This);
+                    });
+            },
+            animationLeftTop:function(size){
+                var This = this,
+                    anObj = this.opts.scrollType == "hor" ? {left: size} : {top: size};
+
+                this.scrollSizeCur = size;
+
+                this.$scrollList.animate(anObj, 400, function () {
+                    This.scrolling = 0;
+                    This.opts.animationEnd.call(This);
+                })
+            }
+
+        };
+
+

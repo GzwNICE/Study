@@ -1,0 +1,71 @@
+/*
+* 全局配置
+* */
+var _GLOBAL = {
+    static: window.location.hostname == "www.51xuediannao.com" ? '/templets/2016/' : '/'  //静态资源路径
+};
+
+require.config({
+    baseUrl: _GLOBAL.static + 'js/',
+    paths: {
+        jquery: 'jquery.min',
+        doT: 'lib/doT/doT.min',
+        lazyLoad:'lib/lazyLoad/jquery.lazyload',
+		highlight:'lib/highlight/highlight.pack',
+        layer: 'lib/layer/layer',
+        layerExt:'lib/layer/extend/layer.ext',
+        scroll:'lib/scroll/scroll',
+        tools: 'public/tools',
+        modules: 'public/modules'
+    },
+    shim: {
+        "doT": {
+            exports: "doT"
+        }
+    }
+});
+
+require(['jquery'], function ($) {
+    //常量声明 同时接管app中的GLOBAL
+    if (typeof GLOBAL !== "undefined") {
+        $.extend(true, _GLOBAL, GLOBAL);
+    }
+    define('constant', $.extend(true, {
+        url: {
+            bdMap:"http://api.map.baidu.com/getscript?v=2.0&ak=258a823fc67cb08d11f5240489a2bcd0&services=&t="
+        },
+        data: {}
+    }, _GLOBAL));
+
+    //constant、tools前置加载
+    require(['constant','tools'], function (constant, tools) {
+
+        var $script = $("[type='text/require']"),
+            _pageConfig = typeof pageConfig == "undefined" ? {} : pageConfig;
+
+        //执行页面js 页面js会先于外链的js执行 （不建议，建议使用外链方式引入）
+        typeof pageRequire == "function" && pageRequire();
+
+        //载入页面外链js
+        if ($script.length) {
+            $script.each(function () {
+                var $this = $(this),
+                    src = this.src,
+                    controller = $this.data("controller");
+
+                require([src], function (obj) {
+                    if (obj) {
+                        typeof obj[controller] !== "undefined" ? obj[controller](_pageConfig) : tools.log(controller + "控制器不存在");
+                        if(typeof obj['lastExecuted']=="function"){
+                            setTimeout(function(){
+                                obj['lastExecuted'](_pageConfig);
+                            },400)
+                        }
+                    }
+                });
+            });
+        }
+
+    });
+
+});

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<!-- saved from url=(0027)http://520ued.com/tools/rem -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>px转rem工具</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="keywords" content="px转rem工具,px transform rem tools,rem转换工具">
+    <meta name="description" content="px转rem工具,px transform rem tools,rem转换工具">
+
+    <link rel="stylesheet" href="./px转rem工具_files/uploader.css">
+    <meta content="_csrf" name="csrf-param">
+<script src="./px转rem工具_files/hm.js.下载"></script><script type="text/javascript" async="" src="http://520ued.disqus.com/embed.js"></script></head>
+<body>
+<img src="./px转rem工具_files/px-rem-logo.png" alt="px转rem logo" style="position: absolute;opacity:0;">
+<div class="tools-box">
+    <!-- D&D Zone-->
+    <div class="uploader">
+        <div class="banner"></div>
+        <h1 class="title">px --&gt; rem</h1>
+        <div class="uploader-box" id="drag-and-drop-zone">
+            <i class="download-icon" title="上传样式文件"></i>
+            <div>Drop your .css file here!</div>
+            <div class="or">-or-</div>
+            <div class="browser">
+                <label>
+                    <span>Click to open the file Browser</span>
+                    <input type="file" name="files[]" multiple="multiple" title="Click to add Files">
+                </label>
+            </div>
+        </div>
+    </div>
+    <!-- /D&D Zone -->
+    <div class="design-box">
+        UI和交互友情赞助商：Fufu
+    </div>
+</div>
+
+<div class="results-box">
+    <div class="filtration-box">
+        <label class="root-box" style="margin-right:30px;">
+           html font size：<input type="text" name="rootSite" id="rootSite" class="root-site" placeholder="请设置根元素默认值，默认100px" value="100">px
+        </label>
+        <!--<label class="border-switch">-->
+            <!--<input id="mediaQuery" type="checkbox" name="mediaQuery" checked/>-->
+            <!--No processing media query-->
+        <!--</label>-->
+    </div>
+
+    <!-- 进度区域 -->
+    <div id="files-box">
+        <ul id="demo-files">
+
+        </ul>
+    </div>
+    <!-- end -->
+</div>
+
+
+<div class="discuss-box">
+    <hr>
+    <h3>留言反馈区</h3>
+    <!-- disqus 评论列表 -->
+    <div id="disqus_thread" style="padding:10px;"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = '520UED'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the &lt;a href="http://disqus.com/?ref_noscript"&gt;comments powered by Disqus.&lt;/a&gt;</noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    <!-- end -->
+</div>
+
+<!--<div id="demo-debug"></div>-->
+
+
+<script src="./px转rem工具_files/jquery-1.8.3.min.js.下载"></script>
+<script src="./px转rem工具_files/dmuploader.js.下载"></script>
+<script src="./px转rem工具_files/demo.js.下载"></script>
+<script type="text/javascript">
+    $('#drag-and-drop-zone').dmUploader({
+        url: '/tools/doRem',
+        dataType: 'json',
+        allowedTypes: 'text/css',
+        extraData: {
+            _csrf: 'LjIOuJPF-FiBnhMRRrH2Oa8rEthfPtpPRedc'
+        },
+        onInit: function () {
+            console.log('init success!');
+        },
+        onBeforeUpload: function (id) {
+            $.danidemo.updateFileStatus(id, 'default', 'Uploading...');
+        },
+        onNewFile: function (id, file) {
+            $.danidemo.addFile('#demo-files', id, file);
+        },
+        onComplete: function () {
+//            $.danidemo.addLog('#demo-debug', 'default', '所有文件转换完成!!');
+        },
+        onUploadProgress: function (id, percent) {
+            var percentStr = percent + '%';
+            $.danidemo.updateFileProgress(id, percentStr);
+        },
+        onUploadSuccess: function (id, data) {
+            $('#rem-file' + id).find('.after a').attr('href', data.Url[0]);
+            $.danidemo.updateFileStatus(id, 'success', '上传完成!!');
+            $.danidemo.updateFileProgress(id, '100%');
+        },
+        onUploadError: function (id, message) {
+            $('#rem-file' + id).find("div.progress-bar").addClass("progress-bar-danger").css("width", "100%");
+            $('#rem-file' + id).find('span.sr-only').html("error");
+            $('#rem-file' + id).find(".after a").remove();
+        },
+        onFileTypeError: function (file) {
+            alert('上传文件格式不对，请上传css文件!');
+        }
+    });
+</script>
+<script>
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?06061d7c17c768b4f988dbbddc71b863";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+</body></html>

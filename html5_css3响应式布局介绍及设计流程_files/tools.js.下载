@@ -1,0 +1,375 @@
+/*
+ * 懒人CSS Bate V0.10
+ * 作者：懒人建站 http://www.51xuediannao.com/
+ * 2015-02-04———
+ * 复杂功能，建议使用优秀的开源插件。js/plugins预置了一些常用的优秀插件
+ * jquery.js是必须的
+ */
+define('tools',function () {
+
+    var tools = {};
+    tools.webStatus = function (statusCode) {
+        var code = {
+            200: "200 -> 请求成功",
+            302: "302 -> 临时跳转",
+            404: "404 -> 请求地址错误",
+            505: "505 -> 请检查服务端"
+        };
+        return code[statusCode]
+    };
+    tools.log = function () {
+        if (typeof TOOLS_DEBUG !== 'undefined' && !TOOLS_DEBUG)return;
+        if ('console' in window) {
+            for (var i = 0, il = arguments.length; i < il; i++) {
+                if (typeof arguments[i] === 'object') {
+//              console.log(JSON.stringify(arguments[i]));
+                    console.log(arguments[i]);
+                    continue;
+                }
+                if (typeof arguments[i] === 'string') {
+                    console.log(decodeURIComponent(arguments[i]));
+                    continue;
+                }
+                console.log(arguments[i]);
+            }
+        } else {
+            return "";
+//          alert(Array.prototype.slice.call(arguments, 0).join(' '));
+        }
+    };
+    tools.data2html = function (tpl, data) {
+        //需要 js/plugins/template/doT.min.js 支持
+        var dotTpl = doT.template(tpl);
+        return dotTpl(data);
+    };
+//模板替换
+    tools.htmlTemplate = function (template, data, allowEmpty, chats) {
+        var regExp;
+        chats = chats || ['\\$\\{', '\\}'];
+        regExp = [chats[0], '([_\\w]+[\\w\\d_]?)', chats[1]].join('');
+        regExp = new RegExp(regExp, 'g');
+        //${xxx}
+        return template.replace(regExp,
+            function (s, s1) {
+                if (data[s1] != null && data[s1] != undefined) {
+                    return data[s1];
+                } else {
+                    return allowEmpty ? '' : s;
+                }
+            });
+    };
+    /*
+     窗体改变(scroll resize)延时执行事件
+     示例：
+     tools.TimeOutRun($(window),"scroll",runFun,2000);	//TimeOutRun(事件,要运行的函数名,间隔时间)
+     function runFun(){ alert("哈哈") }
+     */
+    tools.timeOutRun = function (obj, Event, callBack, time) {
+        var timeOutId = 0,
+            reStart = true;
+        var timeOutRun = function (time) {
+            reStart = false;
+            timeOutId = setTimeout(function () {
+                reStart = true;
+                callBack()
+            }, time);
+        };
+        obj.on(Event, function () {
+            clearTimeout(timeOutId);
+            if (reStart) {
+                timeOutRun(time)
+            }
+        });
+    };
+    //剩余字数统计
+    tools.statInputNum = function (textArea, numItem) {
+        var max = numItem.text(),
+            curLength;
+        textArea[0].setAttribute("maxlength", max);
+        curLength = textArea.val().length;
+        numItem.text(max - curLength);
+        textArea.on('input propertychange', function () {
+            numItem.text(max - $(this).val().length);
+        });
+    };
+    //js动态插入css或者js文件
+    //tools.loadJs("css/base.js",callback,[["attr1","xx"],["attr2","yy"]])
+    tools.loadJs = function (filename, callback, attrArr) {
+        var fileRef = document.createElement('script');         //创建标签
+        fileRef.type = "text/javascript";   //定义属性type的值为text/javascript
+        fileRef.src = filename;              //文件的地址
+        if (attrArr) {
+            var attrLen = attrArr.length;
+            for (var i = 0; i < attrLen; i++) {
+                fileRef.setAttribute(attrArr[i][0], attrArr[i][1]);
+            }
+        }
+        if (callback && typeof callback == "function") {
+            if (fileRef.readyState) {
+                fileRef.onreadystatechange = function () {
+                    if (fileRef.readyState == "loaded" || fileRef.readyState == "complete") {
+                        fileRef.onreadystatechange = null;
+                        callback();
+                        document.getElementsByTagName("head")[0].removeChild(this);
+                    }
+                };
+            }
+            else {
+                fileRef.onload = function () {
+                    callback();
+                    document.getElementsByTagName("head")[0].removeChild(this);
+                };
+            }
+        }
+        document.getElementsByTagName("head")[0].appendChild(fileRef);
+        return this
+    };
+    tools.loadStyle = function (src, callFn, id) {
+        var callBack = callFn ? callFn : function () {
+        };
+        //var linkId = id||"tempStyle";
+        function styleOnload(node, callback) {
+            // for IE6-9 and Opera
+            if (node.attachEvent) {
+                node.attachEvent('onload', callback);
+                // NOTICE:
+                // 1. "onload" will be fired in IE6-9 when the file is 404, but in
+                // this situation, Opera does nothing, so fallback to timeout.
+                // 2. "onerror" doesn't fire in any browsers!
+            }
+            // polling for Firefox, Chrome, Safari
+            else {
+                setTimeout(function () {
+                    poll(node, callback);
+                }, 0); // for cache
+            }
+        }
+
+        function poll(node, callback) {
+            if (callback.isCalled) {
+                return;
+            }
+            var isLoaded = false;
+            if (/webkit/i.test(navigator.userAgent)) {//webkit
+                if (node['sheet']) {
+                    isLoaded = true;
+                }
+            }
+            // for Firefox
+            else if (node['sheet']) {
+                try {
+                    if (node['sheet'].cssRules) {
+                        isLoaded = true;
+                    }
+                } catch (ex) {
+                    // NS_ERROR_DOM_SECURITY_ERR
+                    if (ex.code === 1000) {
+                        isLoaded = true;
+                    }
+                }
+            }
+            if (isLoaded) {
+                // give time to render.
+                setTimeout(function () {
+                    callback();
+                }, 1);
+            }
+            else {
+                setTimeout(function () {
+                    poll(node, callback);
+                }, 1);
+            }
+        }
+
+        function loadCss(src, callFn, id) {
+            var node = document.createElement("link");
+            node.setAttribute("rel", "stylesheet");
+            node.setAttribute("type", "text/css");
+            node.setAttribute("href", src);
+            if (id && document.getElementById(id)) {
+                node.setAttribute("id", "tempStyle");
+                document.body.appendChild(node);
+                document.getElementById(id).href = src;
+            } else {
+                node.setAttribute("id", id);
+                document.getElementsByTagName("head")[0].appendChild(node);
+            }
+            styleOnload(node, callFn);
+            /*styleOnload(node,function(){
+             alert("loaded");
+             });*/
+        }
+
+        loadCss(src, callBack, id);
+    };
+    tools.url2Json = function (str) {
+        var arguments = str ? str.split("&") : window.location.search.replace("?", "").split("&"),
+            data = {};
+        for (var i = 0; i < arguments.length; i++) {
+            var tempArr = arguments[i].split("=");
+            tempArr[0] && (data[tempArr[0]] = tempArr[1])
+        }
+        return data;
+    };
+    tools.form2Json = function ($form) {
+        var jsonArr = $form.serializeArray(), data = {};
+        for (var i = 0; i < jsonArr.length; i++) {
+            data[jsonArr[i].name] = jsonArr[i].value
+        }
+        return data;
+    };
+    tools.reposition = function ($el, $box) {
+        var xEnd,
+            yEnd,
+            runFun = function () {
+                xEnd = $el.offset().left;
+                yEnd = $el.offset().top + $el.outerHeight();
+                $box.animate({"left": xEnd, "top": yEnd})
+            };
+        tools.timeOutRun($(window), "resize", runFun, 200);
+    };
+    /*日期处理工具*/
+    tools.date = {
+        /**
+         * 日期格式化
+         * format 格式应为 "YYYY-MM-DD hh:mm:ss S q" 这样的组合
+         * 可以传入 指定日期，如："2018/07/8 18:45:13"
+         */
+        format: function (format, time) {
+            var now = time ? new Date(time) : new Date();
+            var o = {
+                "M+": now.getMonth() + 1,     //month
+                "D+": now.getDate(),        //day
+                "h+": now.getHours(),       //hour
+                "m+": now.getMinutes(),     //minute
+                "s+": now.getSeconds(),     //second
+                "q+": Math.floor((now.getMonth() + 3) / 3), //quarter
+                "S": now.getMilliseconds() //millisecond
+            };
+
+            if (/(Y+)/.test(format)) {
+                format = format.replace(RegExp.$1, (now.getFullYear() + "").substr(4 - RegExp.$1.length));
+            }
+
+            for (var k in o) {
+                if (new RegExp("(" + k + ")").test(format)) {
+                    format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+                }
+            }
+            return format;
+        },
+        //获取年月日  可以传dates 往前+ 或 往后- 得到最终日期
+        getDate: function (dates) {
+            var dd = new Date();
+            dd.setDate(dd.getDate() + dates);
+
+            var y = dd.getFullYear();
+            var m = dd.getMonth() + 1 < 10 ? "0" + (dd.getMonth() + 1) : dd.getMonth() + 1;
+            var d = dd.getDate() < 10 ? "0" + (dd.getDate()) : dd.getDate();
+            return y + "-" + m + "-" + d;
+        },
+        //本周一与当前日期相差的天数  monday
+        getMonday: function () {
+            var d = new Date();
+            //周
+            var day = d.getDay();
+            return (day != 0) ? day - 1 : 6; // 本周一与当前日期相差的天数  monday
+        }
+    };
+
+    //浏览器版本判断 示例：tools.Browser().chrome  //  $lr().Browser().ver
+    tools.Browser = function () {
+        var browserName = navigator.userAgent.toLowerCase();
+        this.ver = (browserName.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [0, '0'])[1];
+        this.msie = /msie/i.test(browserName) && !/opera/.test(browserName);
+        this.firefox = /firefox/i.test(browserName);
+        this.chrome = /chrome/i.test(browserName) && /webkit/i.test(browserName) && /mozilla/i.test(browserName);
+        this.opera = /opera/i.test(browserName);
+        this.safari = /webkit/i.test(browserName) && !(/chrome/i.test(browserName) && /webkit/i.test(browserName) && /mozilla/i.test(browserName));
+        return this;
+    };
+
+    tools.isMobile = function(){
+        return navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)?1:0;
+    };
+
+    //鼠标滚轮上下判断
+    tools.scrollDirection = function(e){
+        window.mouseScrollDirection = 0;
+        var scrollFunc = function (e) {
+            e = e || window.event;
+            if (e.wheelDelta) {  //判断浏览器IE，谷歌滑轮事件
+                if (e.wheelDelta > 0) { //当滑轮向上滚动时
+                    window.mouseScrollDirection = "up";
+                }
+                if (e.wheelDelta < 0) { //当滑轮向下滚动时
+                    window.mouseScrollDirection = "down";
+                }
+            } else if (e.detail) {  //Firefox滑轮事件
+                if (e.detail> 0) { //当滑轮向上滚动时
+                    window.mouseScrollDirection = "up";
+                }
+                if (e.detail< 0) { //当滑轮向下滚动时
+                    window.mouseScrollDirection = "down";
+                }
+            }
+        };
+        //给页面绑定滑轮滚动事件
+        if (document.addEventListener) {//firefox
+            document.addEventListener('DOMMouseScroll', scrollFunc, false);
+        }
+        //滚动滑轮触发scrollFunc方法  //ie 谷歌
+        window.onmousewheel = document.onmousewheel = scrollFunc;
+    };
+
+    //cookies操作
+    /*
+     * setCookie("name","hayden","s20");
+     * s20是代表20秒
+     * h是指小时，如12小时则是：h12
+     * d是天数，30天则：d30
+     */
+    var getSec = function (str) {
+        var str1 = str.substring(1, str.length) - 0;
+        var str2 = str.substring(0, 1);
+        var obj = {
+            "s": str1 * 1000,
+            "h": str1 * 60 * 60 * 1000,
+            "d": str1 * 24 * 60 * 60 * 1000
+        };
+        return obj[str2];
+    };
+    var setCookie = function (name, value, time, path, domain) {
+        var _expires, _path, _domain;
+        if (time) {
+            var strSec = getSec(time) - 0,
+                exp = new Date();
+            exp.setTime(exp.getTime() + strSec);
+            _expires = ";expires=" + exp.toUTCString()
+        } else {
+            _expires = "";
+        }
+        _path = path ? ";path=" + path : ";path=/";
+        _domain = domain ? ";domain=" + domain : "";
+        document.cookie = name + "=" + encodeURI(value) + _expires + _path + _domain;
+    };
+
+    //读取cookies
+    var getCookie = function (name) {
+        var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+
+        if (arr = document.cookie.match(reg))
+            return decodeURI(arr[2]);
+        else
+            return null;
+    };
+
+    tools.cookie = {
+        setCookie: setCookie,
+        getCookie: getCookie
+    };
+
+    return tools
+
+});
+

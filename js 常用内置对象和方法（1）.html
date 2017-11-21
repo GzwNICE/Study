@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<!-- saved from url=(0044)https://www.cnblogs.com/winyh/p/6668326.html -->
+<html lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>js  常用内置对象和方法 - winyh - 博客园</title>
+<link type="text/css" rel="stylesheet" href="./js 常用内置对象和方法（1）_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="./js 常用内置对象和方法（1）_files/bundle-summerGarden.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="./js 常用内置对象和方法（1）_files/bundle-summerGarden-mobile.css">
+<link title="RSS" type="application/rss+xml" rel="alternate" href="http://www.cnblogs.com/winyh/rss">
+<link title="RSD" type="application/rsd+xml" rel="EditURI" href="http://www.cnblogs.com/winyh/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="http://www.cnblogs.com/winyh/wlwmanifest.xml">
+<script async="" src="./js 常用内置对象和方法（1）_files/analytics.js.下载"></script><script src="./js 常用内置对象和方法（1）_files/jquery.js.下载" type="text/javascript"></script>  
+<script type="text/javascript">var currentBlogApp = 'winyh', cb_enable_mathjax=false;var isLogined=false;</script>
+<script src="./js 常用内置对象和方法（1）_files/blog-common.js.下载" type="text/javascript"></script>
+</head>
+<body>
+<a name="top"></a>
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="http://www.cnblogs.com/winyh/"><img id="blogLogo" src="./js 常用内置对象和方法（1）_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="http://www.cnblogs.com/winyh/">winyh</a></h1>
+<h2></h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+	<li><a id="blog_nav_sitehome" class="menu" href="http://www.cnblogs.com/">博客园</a></li>
+	<li><a id="blog_nav_myhome" class="menu" href="http://www.cnblogs.com/winyh/">首页</a></li>
+	<li><a href="http://news.cnblogs.com/">新闻</a></li>
+	<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+	<li><a id="blog_nav_contact" accesskey="9" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/winyh">联系</a></li>
+	<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+	<li><a id="blog_nav_rss" class="menu" href="http://www.cnblogs.com/winyh/rss">订阅</a>
+	<a id="blog_nav_rss_image" class="aHeaderXML" href="http://www.cnblogs.com/winyh/rss"><img src="./js 常用内置对象和方法（1）_files/xml.gif" alt="订阅"></a></li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<!--done-->
+随笔- 226&nbsp;
+文章- 0&nbsp;
+评论- 6&nbsp;
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+<div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="http://www.cnblogs.com/winyh/p/6668326.html">js  常用内置对象和方法</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body"><p><strong>Javascript对象总结</strong>&nbsp;<br><br>JS中内置了17个对象，常用的是Array对象、Date对象、正则表达式对象、string对象、Global对象&nbsp;<br><strong>Array对象中常用方法</strong>：&nbsp;<br>Concat（）：表示把几个数组合并成一个数组。&nbsp;<br>Join（）：返回字符串值，其中包含了连接到一起的数组的所有元素，元素由指定的分隔符分隔开来。&nbsp;<br>Pop（）：移除数组最后一个元素。&nbsp;<br>Shift（）：移除数组中第一个元素。&nbsp;<br>Slice（start，end）：返回数组中的一段。&nbsp;<br>Push（）：往数组中新添加一个元素，返回最新长度。&nbsp;<br>Sort（）：对数组进行排序。&nbsp;<br>Reverse（）：反转数组的排序。&nbsp;<br>toLocaleString();返回当前系统时间&nbsp;<br>Array对象属性常用的只有一个：&nbsp;<br>Length：表示取得当前数组长度&nbsp;<br><br><strong>Global对象</strong>&nbsp;<br>是一个固有对象，目的是把所有的全局方法集中在一个对象中。&nbsp;<br>Global没有语法，直接调用其方法。&nbsp;<br>escape（）:&nbsp;对&nbsp;String&nbsp;对象编码以便它们能在所有计算机上可读.&nbsp;<br>escape(charString)&nbsp;<br>必选项&nbsp;charstring&nbsp;参数是要编码的任意&nbsp;String&nbsp;对象或文字。&nbsp;<br>isNaN():判断一个值是否是NaN。&nbsp;<br>parseInt（）：返回由字符串得到的整数&nbsp;<br><br><strong>正则表达式对象</strong>&nbsp;<br>本对象包含正则表达式模式以及表明如何应用模式的标志。&nbsp;<br>语法&nbsp;1&nbsp;<br>re&nbsp;=&nbsp;/pattern/[flags]&nbsp;<br><br>语法&nbsp;2&nbsp;<br>re&nbsp;=&nbsp;new&nbsp;RegExp("pattern",["flags"])&nbsp;<br>re为将要赋值正则表达式模式的变量名&nbsp;<br>pattern为正则表达式&nbsp;<br>flags为标记：有如下3中&nbsp;<br>1：g（全文查找）&nbsp;<br>2：i（忽略大小写）&nbsp;<br>3：m（多行查找）&nbsp;<br>当预先知道查找字符串时用语法&nbsp;1。当查找字符串经常变动或不知道时用语法&nbsp;2，比如由用户输入得到的字符串。<br>&nbsp;<br><strong>String对象</strong>&nbsp;<br>charAt():返回指定索引的位置的字符&nbsp;<br>concat（）：返回字符串值，表示两个或多个字符串的连接&nbsp;<br>match（）：使用正则表达式模式对字符串执行查找，并将包含查找结果最为结果返回&nbsp;<br>function&nbsp;MatchDemo(){&nbsp;<br>&nbsp;&nbsp;&nbsp;var&nbsp;r,&nbsp;re;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;声明变量。&nbsp;<br>&nbsp;&nbsp;&nbsp;var&nbsp;s&nbsp;=&nbsp;"The&nbsp;rain&nbsp;in&nbsp;Spain&nbsp;falls&nbsp;mainly&nbsp;in&nbsp;the&nbsp;plain";&nbsp;<br>&nbsp;&nbsp;&nbsp;re&nbsp;=&nbsp;/ain/i;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;创建正则表达式模式。&nbsp;<br>&nbsp;&nbsp;&nbsp;r&nbsp;=&nbsp;s.match(re);&nbsp;&nbsp;&nbsp;//&nbsp;尝试匹配搜索字符串。&nbsp;<br>&nbsp;&nbsp;&nbsp;return(r);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;返回第一次出现&nbsp;"ain"&nbsp;的地方。&nbsp;<br>}&nbsp;<br><br>Replace（a，b）：字符b替换a&nbsp;<br>Search（stringObject）：指明是否存在相应的匹配。如果找到一个匹配，search&nbsp;方法将返回一个整数值，指明这个匹配距离字符串开始的偏移位置。如果没有找到匹配，则返回&nbsp;-1。&nbsp;<br>Slice（start，end）：返回字符段片段&nbsp;<br>Split（）：字符串拆分&nbsp;<br>Substr（start，length）：字符串截取&nbsp;<br>Substring（start，end）取得指定长度内的字符串&nbsp;<br>toUpperCase（）：返回一个字符串，该字符串中的所有字母都被转化为大写字母。&nbsp;<br>toLowerCase（）：返回一个字符串，该字符串中的所有字母都被转化为小写字母。</p>
+<p><strong>Math对象</strong></p>
+<p>ceil()：向上取整。</p>
+<p>floor():向下取整。</p>
+<p>round():四舍五入。</p>
+<p>random():取随机数。</p>
+<p>&nbsp;</p>
+<p><strong>Date对象</strong></p>
+<p>get/setDate()：返回或设置日期。</p>
+<p>get/setFullYear():返回或设置年份，用四位数表示。</p>
+<p>get/setYear():返回或设置年份。</p>
+<p>get/setMonth():返回或设置月份。0为一月</p>
+<p>get/setHours():返回或设置小时，24小时制</p>
+<p>get/setMinutes():返回或设置分钟数。</p>
+<p>get/setSeconds():返回或设置秒钟数。</p>
+<p>get/setTime():返回或设置时间（毫秒为单位）</p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory"></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(6668326,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow(&#39;823d92ed-c0b6-e611-845c-ac853d9f53ac&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./js 常用内置对象和方法（1）_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="./js 常用内置对象和方法（1）_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/winyh/" target="_blank"><img src="./js 常用内置对象和方法（1）_files/sample_face.gif" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/winyh/">winyh</a><br>
+            <a href="http://home.cnblogs.com/u/winyh/followees">关注 - 1</a><br>
+            <a href="http://home.cnblogs.com/u/winyh/followers">粉丝 - 9</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow(&#39;823d92ed-c0b6-e611-845c-ac853d9f53ac&#39;);return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(6668326,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(6668326,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+</div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="http://www.cnblogs.com/winyh/p/6668319.html" class="p_n_p_prefix">« </a> 上一篇：<a href="http://www.cnblogs.com/winyh/p/6668319.html" title="发布于2017-04-05 13:40">js  math  对象的方法</a><br><a href="http://www.cnblogs.com/winyh/p/6668337.html" class="p_n_p_prefix">» </a> 下一篇：<a href="http://www.cnblogs.com/winyh/p/6668337.html" title="发布于2017-04-05 13:44">js  内置对象和方法  示例</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2017-04-05 13:42</span> <a href="http://www.cnblogs.com/winyh/">winyh</a> 阅读(<span id="post_view_count">987</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=6668326" rel="nofollow">编辑</a> <a href="https://www.cnblogs.com/winyh/p/6668326.html#" onclick="AddToWz(6668326);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=319794,cb_entryId=6668326,cb_blogApp=currentBlogApp,cb_blogUserGuid='823d92ed-c0b6-e611-845c-ac853d9f53ac',cb_entryCreatedDate='2017/4/5 13:42:00';loadViewCount(cb_entryId);var cb_postType=1;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="https://www.cnblogs.com/winyh/p/6668326.html#" onclick="return RefreshPage();">刷新页面</a><a href="https://www.cnblogs.com/winyh/p/6668326.html#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login(&#39;commentform&#39;);">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank">【推荐】50万行VC++源码: 大型组态工控、电力仿真CAD与GIS源码库</a><br><a href="http://xc.hubwiz.com/course/592ee9b2b343f27b0ae1ba99?affid=cnblogs" target="_blank">【推荐】Vue.js 2.x 快速入门，大量高效实战示例</a><br><a href="https://cloud.tencent.com/act/campus?fromSource=gwzcw.613398.613398.613398" target="_blank">【活动】腾讯云 学生专属优惠套餐 多规格选择</a><br></div>
+<div id="opt_under_post"></div>
+<div id="cnblogs_c1" class="c_ad_block"><a href="http://www.grapecity.com.cn/enterprise-solutions/huozige/?utm_source=cnblogs&amp;utm_medium=blogpage&amp;utm_term=bottom&amp;utm_content=huozige&amp;utm_campaign=community" target="_blank"><img width="300" height="250" src="./js 常用内置对象和方法（1）_files/24442-20171114102259156-1700577248.png" alt="葡萄城1114"></a></div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>最新IT新闻</b>:<br> ·  <a href="http://news.cnblogs.com/n/582899/" target="_blank">力推教育！微软发布第三版《我的世界》编码教程</a><br> ·  <a href="http://news.cnblogs.com/n/582902/" target="_blank">在作死这件事上，你可能输给了微博</a><br> ·  <a href="http://news.cnblogs.com/n/582896/" target="_blank">上人脸识别！阿里钉钉M2考勤机提前曝光</a><br> ·  <a href="http://news.cnblogs.com/n/582900/" target="_blank">Linux基金会发布了新的企业开源指南</a><br> ·  <a href="http://news.cnblogs.com/n/582898/" target="_blank">微软商店开始销售另一款Android手机Razer Phone</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="cnblogs_c2" class="c_ad_block"><a href="http://click.aliyun.com/m/34771/" target="_blank"><img width="468" height="60" src="./js 常用内置对象和方法（1）_files/24442-20171113120112796-634832761.jpg" alt="阿里云1113"></a></div>
+<div id="under_post_kb"><div class="itnews c_ad_block" id="kb_block"><b>最新知识库文章</b>:<br><div id="kb_recent"> ·  <a href="http://kb.cnblogs.com/page/112506/" target="_blank">大道至简，职场上做人做事做管理</a><br> ·  <a href="http://kb.cnblogs.com/page/563790/" target="_blank">关于编程，你的练习是不是有效的？</a><br> ·  <a href="http://kb.cnblogs.com/page/581467/" target="_blank">改善程序员生活质量的 3+10 习惯</a><br> ·  <a href="http://kb.cnblogs.com/page/568841/" target="_blank">NASA的10条代码编写原则</a><br> ·  <a href="http://kb.cnblogs.com/page/578502/" target="_blank">为什么你参加了那么多培训，却依然表现平平？</a><br></div>» <a href="http://kb.cnblogs.com/" target="_blank">更多知识库文章...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverAdT2();
+    deliverAdC1();
+    deliverAdC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);   
+</script>
+</div>
+
+
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+			<div id="calendar"><div id="blog-calendar" style="display:none"></div><script type="text/javascript">loadBlogDefaultCalendar();</script></div>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+
+<div id="widget_my_google" class="div_my_zzk"><input type="text" name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk">&nbsp;<input onclick="google_go()" type="button" value="谷歌搜索" class="btn_my_zzk"></div>
+</div>
+</div>
+
+</div><div id="sidebar_toptags" class="sidebar-block"></div><div id="sidebar_categories">
+<div class="catListPostArchive">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="http://www.cnblogs.com/winyh/archive/2017/11.html">2017年11月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="http://www.cnblogs.com/winyh/archive/2017/10.html">2017年10月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="http://www.cnblogs.com/winyh/archive/2017/09.html">2017年9月 (22)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="http://www.cnblogs.com/winyh/archive/2017/08.html">2017年8月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="http://www.cnblogs.com/winyh/archive/2017/07.html">2017年7月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="http://www.cnblogs.com/winyh/archive/2017/06.html">2017年6月 (10)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="http://www.cnblogs.com/winyh/archive/2017/05.html">2017年5月 (26)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="http://www.cnblogs.com/winyh/archive/2017/04.html">2017年4月 (73)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="http://www.cnblogs.com/winyh/archive/2017/03.html">2017年3月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_9" href="http://www.cnblogs.com/winyh/archive/2017/02.html">2017年2月 (15)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_10" href="http://www.cnblogs.com/winyh/archive/2017/01.html">2017年1月 (10)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_11" href="http://www.cnblogs.com/winyh/archive/2016/12.html">2016年12月 (40)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/winyh/p/6682455.html#3834542">1. Re:教你在微信中给Vue单页应用设置标题</a></li>
+        <li class="recent_comment_body">学到干货,感谢楼主<br><a href="https://www.cnblogs.com/winyh/p/6668326.html" target="_blank"></a></li>
+        <li class="recent_comment_author">--qiuce064591</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/winyh/p/6289934.html#3712456">2. Re:Seajs是什么及其优缺点&amp;如何使用？</a></li>
+        <li class="recent_comment_body">789979</li>
+        <li class="recent_comment_author">--暗惧者</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/winyh/p/6289934.html#3705180">3. Re:Seajs是什么及其优缺点&amp;如何使用？</a></li>
+        <li class="recent_comment_body">缺点就是已经没有系统的组件库可用了 以前还有arale alice啥的</li>
+        <li class="recent_comment_author">--zhishaofei3</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/winyh/p/6705003.html#3691199">4. Re:Vue-cli proxyTable 解决开发环境的跨域问题</a></li>
+        <li class="recent_comment_body">@小白前端本地端口号不能跟应用的端口号相同：比如你应用的端口号是8080，你本地的其他应用就不能占用8080端口了...</li>
+        <li class="recent_comment_author">--winyh</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/winyh/p/6705003.html#3690608">5. Re:Vue-cli proxyTable 解决开发环境的跨域问题</a></li>
+        <li class="recent_comment_body">大神您好，关于端口占用的能不能说的清楚点，小白不太明白</li>
+        <li class="recent_comment_author">--小白前端</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="http://www.cnblogs.com/winyh/p/6682039.html">1. Mongoose简要API(9677)</a></li><li><a href="http://www.cnblogs.com/winyh/p/6289934.html">2. Seajs是什么及其优缺点&amp;如何使用？(6320)</a></li><li><a href="http://www.cnblogs.com/winyh/p/6714923.html">3. JS事件监听手机屏幕触摸事件 Touch(5916)</a></li><li><a href="http://www.cnblogs.com/winyh/p/6909649.html">4. Vue 开发|文件目录结构部署(5443)</a></li><li><a href="http://www.cnblogs.com/winyh/p/6682455.html">5. 教你在微信中给Vue单页应用设置标题(5395)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="http://www.cnblogs.com/winyh/p/6289934.html">1. Seajs是什么及其优缺点&amp;如何使用？(2)</a></li><li><a href="http://www.cnblogs.com/winyh/p/6705003.html">2. Vue-cli proxyTable 解决开发环境的跨域问题(2)</a></li><li><a href="http://www.cnblogs.com/winyh/p/6682455.html">3. 教你在微信中给Vue单页应用设置标题(1)</a></li><li><a href="http://www.cnblogs.com/winyh/p/6682039.html">4. Mongoose简要API(1)</a></li></ul></div>
+</div>
+</div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2017 winyh
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+</body></html>
